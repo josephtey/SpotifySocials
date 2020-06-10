@@ -1,17 +1,18 @@
 import React, {useState} from 'react';
 import SpotifyWebAPI from 'spotify-web-api-js';
+import db from '../api/db'
 
 const DBContext = React.createContext();
 
 export const DBProvider = ({ children }) => {
 
-  const [spotifyObject, setSpotifyObject] = useState(null)
+  let spotifyObject = null
 
   const createSpotifyObject = async (accessToken) => {
     let sp = new SpotifyWebAPI();
     await sp.setAccessToken(accessToken);
 
-    setSpotifyObject(sp)
+    spotifyObject = sp
   }
 
   const getProfileInfo = async () => {
@@ -20,24 +21,57 @@ export const DBProvider = ({ children }) => {
     return profileInfo
   }
 
-  const initialiseUser = () => {
-    
-  };
+  const getTopArtists = async () => {
+    const topArtists = await spotifyObject.getMyTopArtists()
 
-  const checkIfUserExists = () => {
-    return false
+    return topArtists
   }
 
-  const getUsers = () => {
-    return ["Joe", "Em"]
+  const getTopTracks = async () => {
+    const topTracks = await spotifyObject.getMyTopTracks()
+
+    return topTracks
+  }
+
+  const initialiseUser = async (username, spotifyId, topArtists, topTracks) => {
+    const response = await db.post('/inituser', {username, spotifyId, topArtists, topTracks})
+
+    return response.data.message
   };
 
-  const compareUsers = () => {
+  const checkIfUserExists = async (spotifyId) => {
+    const response = await db.post('/userexists', {spotifyId})
+  
+    return response.data.result
+  }
 
+  const getUsers = async () => {
+    const response = await db.get('/userlist')
+
+    return response.data
+  };
+
+  const getUser = async (spotifyId) => {
+    const response = await db.post('/user', {spotifyId})
+
+    return response.data
+  };
+
+  const compareUsers = async (spotifyId) => {
+    
+    // Get current user info
+    let profileInfo = await getProfileInfo()
+    let currentUser = await getUser(profileInfo.id)
+
+    // Get second user info
+    let secondUser = await getUser(spotifyId)
+    
+    // Compare both users
+    return [currentUser.username, secondUser.username]
   };
 
   return (
-    <DBContext.Provider value={{ checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
+    <DBContext.Provider value={{ getUser, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
       {children}
     </DBContext.Provider>
   );
