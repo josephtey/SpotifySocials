@@ -1,0 +1,15 @@
+SpotifySocialsApp/node_modules/**/*
+SpotifySocialsApp/.expo/*
+SpotifySocialsApp/npm-debug.*
+SpotifySocialsApp/*.jks
+SpotifySocialsApp/*.p8
+SpotifySocialsApp/*.p12
+SpotifySocialsApp/*.key
+SpotifySocialsApp/*.mobileprovision
+SpotifySocialsApp/*.orig.*
+SpotifySocialsApp/web-build/
+SpotifySocialsApp/web-report/
+SpotifySocialsServer/node_modules/**/*
+
+# macOS
+.DS_Store
