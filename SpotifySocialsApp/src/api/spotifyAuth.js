@@ -65,42 +65,42 @@ const getAuthorizationCode = async () => {
   }
 }
 
-// export const refreshTokens = async (refreshToken) => {
-//     try {
-//       const credentials = spotifyCredentials;
-//       const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
+export const refreshTokens = async (refreshToken) => {
+    try {
+      const credentials = spotifyCredentials;
+      const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
 
-//       // Check if token is still valid
-//       const response = await fetch('https://accounts.spotify.com/api/token', {
-//         method: 'POST',
-//         headers: {
-//           Authorization: `Basic ${credsB64}`,
-//           'Content-Type': 'application/x-www-form-urlencoded',
-//         },
-//         body: `grant_type=refresh_token&refresh_t oken=${refreshToken}`,
-//       });
-//       const responseJson = await response.json();
+      // Check if token is still valid
+      const response = await fetch('https://accounts.spotify.com/api/token', {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${credsB64}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `grant_type=refresh_token&refresh_t oken=${refreshToken}`,
+      });
+      const responseJson = await response.json();
 
-//       // If not valid, get new token
-//       if (responseJson.error) {
-//         return await getTokens();
-//       } else {
-//         const {
-//           access_token: newAccessToken,
-//           refresh_token: newRefreshToken,
-//           expires_in: expiresIn,
-//         } = responseJson;
+      // If not valid, get new token
+      if (responseJson.error) {
+        return await getTokens();
+      } else {
+        const {
+          access_token: newAccessToken,
+          refresh_token: newRefreshToken,
+          expires_in: expiresIn,
+        } = responseJson;
   
-//         const expirationTime = new Date().getTime() + expiresIn * 1000;
+        const expirationTime = new Date().getTime() + expiresIn * 1000;
 
-//         return {
-//             accessToken,
-//             newRefreshToken,
-//             expirationTime
-//         }
-//       }
-//     } catch (err) {
-//       console.error(err)
-//       return err
-//     }
-//   }
+        return {
+            accessToken,
+            newRefreshToken,
+            expirationTime
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      return err
+    }
+  }

@@ -5,34 +5,34 @@ import DBContext from '../context/dbContext'
 
 
 const LoginScreen = ({navigation}) => {
-    const [userData, setUserData] = useState(null)
     const [userProfile, setUserProfile] = useState(null)
     const [userExists, setUserExists] = useState(null)
     const [username, setUsername] = useState("")
     const [message, setMessage] = useState("")
 
 
-    const { checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getTopArtists, getTopTracks } = useContext(DBContext)
+    const { userAuthData, setUserAuthData, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getTopArtists, getTopTracks, getTopGenres } = useContext(DBContext)
 
     const getSpotifyAPIToken = async () => {
         let response = await getTokens();
-        setUserData(response)
+        setUserAuthData(response)
     }
 
     const generateUserProfile = async () => {
         setMessage("Loading ...")
 
-        let topArtists = await getTopArtists()
+        let {artists, genres} = await getTopArtists()
+        let topGenres = getTopGenres(genres)
         let topTracks = await getTopTracks()
 
-        let response = await initialiseUser(username, userProfile.id, JSON.stringify(topArtists), JSON.stringify(topTracks))
+        let response = await initialiseUser(username, userProfile.id, JSON.stringify(topGenres), JSON.stringify(artists), JSON.stringify(topTracks))
         navigation.navigate('Friends')
     }
 
     // Before logging in
     useEffect(()=>{
         const fetchData = async () => {
-            if (userData && new Date().getTime() > userData.expirationTime) {
+            if (userAuthData && new Date().getTime() > userAuthData.expirationTime) {
                 getSpotifyAPIToken()
             } 
         }
@@ -45,7 +45,7 @@ const LoginScreen = ({navigation}) => {
         const getSpotifyData = async () => {
             
             // Initialise spotify object
-            await createSpotifyObject(userData.accessToken)
+            await createSpotifyObject(userAuthData.accessToken)
 
             // Get user profile 
             let userInfo = await getProfileInfo()
@@ -56,11 +56,15 @@ const LoginScreen = ({navigation}) => {
             setUserExists(exist)
         }
 
-        if (userData) {
+        if (userAuthData) {
             getSpotifyData()
+        } else {
+            setUserExists(null)
         }
 
-    }, [userData])
+        
+
+    }, [userAuthData])
 
     // After checking if userExists
     useEffect(()=>{
@@ -70,7 +74,7 @@ const LoginScreen = ({navigation}) => {
     }, [userExists])
 
     // Initialise User Data Screen
-    if (userData) {
+    if (userAuthData) {
 
         if (userExists === false) {
             return (
