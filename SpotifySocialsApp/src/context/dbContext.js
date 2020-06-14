@@ -8,6 +8,7 @@ export const DBProvider = ({ children }) => {
 
   let spotifyObject = null
   const [userAuthData, setUserAuthData] = useState(null)
+  const [spotifyProfile, setSpotifyProfile] = useState(null)
 
   const createSpotifyObject = async (accessToken) => {
     let sp = new SpotifyWebAPI();
@@ -18,8 +19,9 @@ export const DBProvider = ({ children }) => {
 
   const getProfileInfo = async () => {
     const profileInfo = await spotifyObject.getMe();
+    setSpotifyProfile(profileInfo)
     
-    return profileInfo
+    return profileInfo    
   }
 
   const getTopArtists = async () => {
@@ -92,8 +94,27 @@ export const DBProvider = ({ children }) => {
 
   const getUser = async (spotifyId) => {
     const response = await db.post('/user', {spotifyId})
+    let user = response.data
 
-    return response.data
+    // Data Processing
+    let topGenres = JSON.parse(response.data.topGenres)
+    let arr = []
+    for (let key in topGenres) {
+      arr.push([key, topGenres[key]])
+    }
+
+    arr.sort(function compare(kv1, kv2) {
+      return kv1[1] - kv2[1]
+    })
+
+    let sortedGenres = []
+    for (let i in arr) {
+      sortedGenres.push(arr[i][0])
+    }
+
+    // Set processed data
+    user.topGenres = sortedGenres
+    return user
   };
 
   const getCompatibilityPercentage = (user1, user2) => {
@@ -108,13 +129,13 @@ export const DBProvider = ({ children }) => {
 
     // Get second user info
     let secondUser = await getUser(spotifyId)
-  
+
     // Compare both users
     return secondUser
   };
 
   return (
-    <DBContext.Provider value={{ userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
+    <DBContext.Provider value={{ spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
       {children}
     </DBContext.Provider>
   );
