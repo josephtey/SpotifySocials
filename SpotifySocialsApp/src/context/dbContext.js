@@ -6,17 +6,32 @@ const DBContext = React.createContext();
 
 export const DBProvider = ({ children }) => {
 
-  let spotifyObject = null
+  const [spotifyObject, setSpotifyObject] = useState(null)
   const [userAuthData, setUserAuthData] = useState(null)
   const [spotifyProfile, setSpotifyProfile] = useState(null)
+  const [userData, setUserData] = useState(null)
 
+  // Initialising / Setup
   const createSpotifyObject = async (accessToken) => {
     let sp = new SpotifyWebAPI();
     await sp.setAccessToken(accessToken);
 
-    spotifyObject = sp
+    setSpotifyObject(sp)
   }
 
+  const initialiseUser = async (displayName, username, spotifyId, topGenres, topArtists, topTracks) => {
+    const response = await db.post('/inituser', {displayName, username, spotifyId, topGenres, topArtists, topTracks})
+
+    return response.data.message
+  };
+
+  const checkIfUserExists = async (spotifyId) => {
+    const response = await db.post('/userexists', {spotifyId})
+  
+    return response.data.result
+  }
+
+  // Spotify data about CURRENT USER
   const getProfileInfo = async () => {
     const profileInfo = await spotifyObject.getMe();
     setSpotifyProfile(profileInfo)
@@ -44,8 +59,8 @@ export const DBProvider = ({ children }) => {
       artists,
       genres
     }
-  }
-
+  } 
+  
   const getTopGenres = (genres) => {
     genreCount = {}
     for (artist in genres) {
@@ -74,16 +89,14 @@ export const DBProvider = ({ children }) => {
     return topTracks
   }
 
-  const initialiseUser = async (username, spotifyId, topGenres, topArtists, topTracks) => {
-    const response = await db.post('/inituser', {username, spotifyId, topGenres, topArtists, topTracks})
 
-    return response.data.message
-  };
+  // Mongo DB
 
-  const checkIfUserExists = async (spotifyId) => {
-    const response = await db.post('/userexists', {spotifyId})
-  
-    return response.data.result
+  const getCurrentUserData = async (spotifyId) => {
+    const userData = await getUser(spotifyId)
+    setUserData(userData)
+
+    return userData
   }
 
   const getUsers = async () => {
@@ -117,25 +130,31 @@ export const DBProvider = ({ children }) => {
     return user
   };
 
-  const getCompatibilityPercentage = (user1, user2) => {
 
+  // Searching Spotify Directory more info / images / etc
+  const getArtist = async (artistId) => {
+    const artistInfo = await spotifyObject.getArtist(artistId);
+
+    return artistInfo
   }
 
-  const compareUsers = async (spotifyId) => {
-    
-    // Get current user info
-    let profileInfo = await getProfileInfo()
-    let currentUser = await getUser(profileInfo.id)
+  const getTrack = async (trackId) => {
+    const trackInfo = await spotifyObject.getTrack(trackId);
 
-    // Get second user info
-    let secondUser = await getUser(spotifyId)
+    return trackInfo
+  }
 
-    // Compare both users
-    return secondUser
+
+  // OTHER
+
+  const compareUsers = async (currentUser, friend) => {
+    console.log("hey")
+    console.log(currentUser.spotifyId, friend.spotifyId)
   };
 
   return (
-    <DBContext.Provider value={{ spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
+    <DBContext.Provider 
+      value={{ getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
       {children}
     </DBContext.Provider>
   );

@@ -1,5 +1,5 @@
 export const spotifyCredentials = {
-    clientId: '1224e6555454402c9c5e057fd1c1af6a',
-    clientSecret: '627c8494d0d0432a8b8802825594ab2f',
+    clientId: '71eb574b1475479ebc2b8426c30d7265',
+    clientSecret: 'bdcec9242ef845328f0b4b04b80546f0',
     redirectUri: 'https://auth.expo.io/@josephtey/SpotifySocials'
 }
