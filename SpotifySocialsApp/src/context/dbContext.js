@@ -145,16 +145,34 @@ export const DBProvider = ({ children }) => {
   }
 
 
-  // OTHER
+  // COMPARE
+  const getMatches = async (currentUser) => {
+    const response = await db.post('/getmatches', {
+      currentUser
+    })
 
-  const compareUsers = async (currentUser, friend) => {
-    console.log("hey")
-    console.log(currentUser.spotifyId, friend.spotifyId)
+    return response.data
+  }
+
+  const compareUsers = async (currentUser, comparedUser) => {
+
+    let percentage = Math.floor(Math.random() * 101)
+    let dateMatched = new Date().getTime()
+
+    const response = await db.post('/newmatch', {
+      currentUser: currentUser.username, 
+      comparedUser: comparedUser.username,
+      compatibilityPercentage: percentage,
+      dateMatched
+    })
+
+    return percentage
+
   };
 
   return (
     <DBContext.Provider 
-      value={{ getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
+      value={{ getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
       {children}
     </DBContext.Provider>
   );

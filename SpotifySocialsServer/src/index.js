@@ -1,15 +1,18 @@
 require('./models/User')
+require('./models/Match')
 
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 
 const userRoutes = require('./routes/users')
+const matchRoutes = require('./routes/matches')
 
 const app = express()
 
 app.use(bodyParser.json())
 app.use(userRoutes)
+app.use(matchRoutes)
 
 const mongoUri = 'mongodb+srv://josephtey:joe123@cluster0-8gz6y.mongodb.net/<dbname>?retryWrites=true&w=majority'
 mongoose.connect(mongoUri, {
