@@ -8,7 +8,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 const FriendsScreen = ({navigation}) => {
 
-    const { spotifyProfile, userData, getUsers, getMatches } = useContext(DBContext)
+    const { spotifyProfile, userData, searchUsers, getMatches } = useContext(DBContext)
     
     const [users, setUsers] = useState([])
     const [matches, setMatches] = useState([])
@@ -16,7 +16,7 @@ const FriendsScreen = ({navigation}) => {
 
     useEffect(()=>{
         const fetchData = async () => {
-            setUsers(await getUsers())
+            setUsers(await searchUsers(""))
             setMatches(await getMatches(userData.username))
         }
 
@@ -86,7 +86,7 @@ const FriendsScreen = ({navigation}) => {
                                 return (
                                     <TouchableOpacity
                                         onPress={()=>{
-                                            navigation.navigate('Compare', {
+                                            navigation.navigate('Friend', {
                                                 id: item.spotifyId, 
                                                 username: item.username, 
                                                 displayName: item.displayName,
@@ -107,7 +107,8 @@ const FriendsScreen = ({navigation}) => {
                                             </FriendLeft>
                                             <FriendRight>
                                                 <FriendStats>
-                                                   {latestMatch ? latestMatch.compatibilityPercentage : null} 
+                                                   {latestMatch ? 
+                                                    latestMatch.compatibilityPercentage : null} 
                                                 </FriendStats>
                                             </FriendRight>
                                         </FriendCard>

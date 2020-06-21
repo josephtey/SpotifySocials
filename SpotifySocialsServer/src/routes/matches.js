@@ -12,6 +12,17 @@ router.post('/getmatches', async (req, res)=>{
     })
 })
 
+router.post('/getusermatches', async (req, res)=>{
+    const { currentUser, comparedUser } = req.body
+    
+    Match.find({currentUser, comparedUser}, (err, matches) => {
+        matches.sort(function(a, b){
+            return b.dateMatched-a.dateMatched
+        })
+        res.send(matches)
+    })
+})
+
 router.post('/newmatch', async (req, res)=>{
     const { currentUser, comparedUser, compatibilityPercentage, dateMatched } = req.body
     try {

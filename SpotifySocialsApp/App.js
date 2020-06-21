@@ -3,7 +3,7 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import LoginScreen from './src/screens/LoginScreen'
 import FriendsScreen from './src/screens/FriendsScreen'
-import CompareScreen from './src/screens/CompareScreen'
+import FriendScreen from './src/screens/FriendScreen'
 import CurrentUserScreen from './src/screens/CurrentUserScreen'
 import InitialiseScreen from './src/screens/InitialiseScreen'
 import { DBProvider } from './src/context/dbContext'
@@ -11,7 +11,7 @@ import { DBProvider } from './src/context/dbContext'
 const navigator = createStackNavigator({
   Login: LoginScreen,
   Friends: FriendsScreen,
-  Compare: CompareScreen,
+  Friend: FriendScreen,
   CurrentUser: CurrentUserScreen,
   Initialise: InitialiseScreen
 },

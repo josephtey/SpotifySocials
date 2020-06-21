@@ -99,8 +99,14 @@ export const DBProvider = ({ children }) => {
     return userData
   }
 
-  const getUsers = async () => {
-    const response = await db.get('/userlist')
+  const getFriends = async (currentUser) => {
+    const response = await db.post('/getfriends', {currentUser})
+
+    return response.data
+  };
+
+  const searchUsers = async (username) => {
+    const response = await db.post('/searchusers', {username})
 
     return response.data
   };
@@ -154,16 +160,28 @@ export const DBProvider = ({ children }) => {
     return response.data
   }
 
+  const getUserMatches = async (currentUser, comparedUser) => {
+    const response = await db.post('/getusermatches', {
+      currentUser, comparedUser
+    })
+    
+    return response.data
+  }
+
+  const calculateSimilarity = (currentUser, comparedUser) => {
+      console.log(currentUser)
+      return Math.floor(Math.random() * 101)
+  }
+
   const compareUsers = async (currentUser, comparedUser) => {
 
-    let percentage = Math.floor(Math.random() * 101)
-    let dateMatched = new Date().getTime()
+    let percentage = calculateSimilarity(currentUser, comparedUser)
 
-    const response = await db.post('/newmatch', {
+    await db.post('/newmatch', {
       currentUser: currentUser.username, 
       comparedUser: comparedUser.username,
       compatibilityPercentage: percentage,
-      dateMatched
+      dateMatched: new Date().getTime()
     })
 
     return percentage
@@ -172,7 +190,7 @@ export const DBProvider = ({ children }) => {
 
   return (
     <DBContext.Provider 
-      value={{ getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getUsers, compareUsers }}>
+      value={{ searchUsers, getUserMatches, getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getFriends, compareUsers }}>
       {children}
     </DBContext.Provider>
   );

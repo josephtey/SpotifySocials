@@ -34,8 +34,10 @@ router.post('/inituser', async (req, res)=>{
     
 })
 
-router.get('/userlist', (req, res)=>{
-    User.find({}, 'spotifyId username displayName', (err, users) => {
+router.post('/searchusers', (req, res)=>{
+    const { username } = req.body
+
+    User.find({ username: {$regex : "(?i)^" + username}}, 'spotifyId username displayName', (err, users) => {
         res.send(users)
     })
 })
