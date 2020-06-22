@@ -75,9 +75,21 @@ const FriendsScreen = ({navigation}) => {
 
                 </TopBar>
                 <Section>
-                    <SectionTitle>
-                        Friends
-                    </SectionTitle>
+                    <SectionHeader>
+                        <SectionTitle>
+                            Friends
+                        </SectionTitle>
+                        <TouchableOpacity
+                            onPress={
+                                ()=>{
+                                    navigation.navigate("Search", {setLoading})
+                                }
+                            }
+                        >
+                            <AntDesign name="adduser" size={24} color="grey" />
+                        </TouchableOpacity>
+                    </SectionHeader>
+                    
                     <FriendList 
                         data={users}
                         keyExtractor={(user)=>user.spotifyId}
@@ -213,8 +225,13 @@ const SectionTitle = styled.Text`
     color: #848484;
     padding: 15px 0;
     text-transform: uppercase;
-    font-weight: bold
+    font-weight: bold;
+`
 
+const SectionHeader = styled.View`
+    flex-direction: row;
+    alignItems: center;
+    justifyContent: space-between
 `
 
 const FriendList = styled.FlatList`

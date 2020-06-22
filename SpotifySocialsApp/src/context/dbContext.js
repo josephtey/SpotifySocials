@@ -110,6 +110,16 @@ export const DBProvider = ({ children }) => {
     return response.data
   };
 
+  const acceptFriendRequest = async (currentUser, otherUser) => {
+    const response = await db.post('/acceptfriend', {currentUser, otherUser})
+    return response.data
+  };
+
+  const addFriend = async (currentUser, otherUser) => {
+    const response = await db.post('/addFriend', {currentUser, otherUser})
+    return response.data
+  };
+
   const searchUsers = async (username) => {
     const response = await db.post('/searchusers', {username})
 
@@ -174,7 +184,6 @@ export const DBProvider = ({ children }) => {
   }
 
   const calculateSimilarity = (currentUser, comparedUser) => {
-      console.log(currentUser)
       return Math.floor(Math.random() * 101)
   }
 
@@ -195,7 +204,7 @@ export const DBProvider = ({ children }) => {
 
   return (
     <DBContext.Provider 
-      value={{ getFriendRequests, searchUsers, getUserMatches, getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getFriends, compareUsers }}>
+      value={{ addFriend, acceptFriendRequest, getFriendRequests, searchUsers, getUserMatches, getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getFriends, compareUsers }}>
       {children}
     </DBContext.Provider>
   );

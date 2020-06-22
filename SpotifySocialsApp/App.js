@@ -7,6 +7,7 @@ import FriendScreen from './src/screens/FriendScreen'
 import CurrentUserScreen from './src/screens/CurrentUserScreen'
 import NotificationsScreen from './src/screens/NotificationsScreen'
 import InitialiseScreen from './src/screens/InitialiseScreen'
+import SearchScreen from './src/screens/SearchScreen'
 import { DBProvider } from './src/context/dbContext'
 
 const navigator = createStackNavigator({
@@ -15,7 +16,8 @@ const navigator = createStackNavigator({
   Friend: FriendScreen,
   CurrentUser: CurrentUserScreen,
   Initialise: InitialiseScreen,
-  Notifications: NotificationsScreen
+  Notifications: NotificationsScreen,
+  Search: SearchScreen
 },
   {
     initialRouteName: 'Login',
