@@ -8,7 +8,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 const FriendsScreen = ({navigation}) => {
 
-    const { spotifyProfile, userData, searchUsers, getMatches } = useContext(DBContext)
+    const { spotifyProfile, userData, getFriends, getMatches } = useContext(DBContext)
     
     const [users, setUsers] = useState([])
     const [matches, setMatches] = useState([])
@@ -16,7 +16,7 @@ const FriendsScreen = ({navigation}) => {
 
     useEffect(()=>{
         const fetchData = async () => {
-            setUsers(await searchUsers(""))
+            setUsers(await getFriends(userData.username))
             setMatches(await getMatches(userData.username))
         }
 
@@ -65,7 +65,11 @@ const FriendsScreen = ({navigation}) => {
                         </CurrentUser>
                     </TouchableOpacity>
                     
-                    <NotificationIcon>
+                    <NotificationIcon
+                        onPress={()=>{
+                            navigation.navigate("Notifications", {setLoading})
+                        }}    
+                    >
                         <Ionicons name="ios-notifications" size={30} color="white" />
                     </NotificationIcon>
 
@@ -74,7 +78,7 @@ const FriendsScreen = ({navigation}) => {
                     <SectionTitle>
                         Friends
                     </SectionTitle>
-                    <FlatList 
+                    <FriendList 
                         data={users}
                         keyExtractor={(user)=>user.spotifyId}
                         renderItem={({item})=>{
@@ -202,6 +206,7 @@ const UserCaption = styled.Text`
 `
 
 const Section = styled.View`
+    flex: 1
 `
 
 const SectionTitle = styled.Text`
@@ -212,7 +217,11 @@ const SectionTitle = styled.Text`
 
 `
 
-const NotificationIcon = styled.View`
+const FriendList = styled.FlatList`
+    
+`
+
+const NotificationIcon = styled.TouchableOpacity`
 `
 
 export default FriendsScreen
