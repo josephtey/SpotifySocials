@@ -38,6 +38,7 @@ router.post('/searchusers', (req, res)=>{
     const { username } = req.body
 
     User.find({ username: {$regex : "(?i)^" + username}}, 'spotifyId username displayName', (err, users) => {
+        console.log(users)
         res.send(users)
     })
 })

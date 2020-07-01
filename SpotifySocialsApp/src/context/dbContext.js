@@ -115,6 +115,11 @@ export const DBProvider = ({ children }) => {
     return response.data
   };
 
+  const rejectFriendRequest = async (currentUser, otherUser) => {
+    const response = await db.post('/rejectfriend', {currentUser, otherUser})
+    return response.data
+  };
+
   const addFriend = async (currentUser, otherUser) => {
     const response = await db.post('/addFriend', {currentUser, otherUser})
     return response.data
@@ -204,7 +209,7 @@ export const DBProvider = ({ children }) => {
 
   return (
     <DBContext.Provider 
-      value={{ addFriend, acceptFriendRequest, getFriendRequests, searchUsers, getUserMatches, getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getFriends, compareUsers }}>
+      value={{ addFriend, rejectFriendRequest, acceptFriendRequest, getFriendRequests, searchUsers, getUserMatches, getMatches, getTrack, getArtist, getCurrentUserData, userData, spotifyProfile, userAuthData, setUserAuthData, getUser, getTopGenres, getTopArtists, getTopTracks, checkIfUserExists, getProfileInfo, createSpotifyObject, initialiseUser, getFriends, compareUsers }}>
       {children}
     </DBContext.Provider>
   );
