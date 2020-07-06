@@ -21,7 +21,7 @@ const navigator = createStackNavigator({
 },
   {
     initialRouteName: 'Login',
-    mode: 'modal',
+    mode: 'screen',
     defaultNavigationOptions: {
       headerShown: false,
       cardStyle: {
