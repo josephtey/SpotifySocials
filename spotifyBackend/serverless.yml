@@ -1,0 +1,21 @@
+
+service: spotifybackend
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+
+# you can overwrite defaults here
+#  stage: dev
+  region: ap-southeast-2
+
+plugins:
+  - serverless-express
+
+functions:
+  app:
+    handler: handler.handler
+    events: 
+      - http:
+          path: /{proxy+}
+          method: ANY

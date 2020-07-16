@@ -2,14 +2,13 @@ require('./models/User')
 require('./models/Match')
 require('./models/Relationship')
 
-const express = require('express')
+const express = require('serverless-express/express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 
 const userRoutes = require('./routes/users')
 const matchRoutes = require('./routes/matches')
 const relationshipRoutes = require('./routes/relationships')
-const testRoutes = require('./routes/test')
 
 const app = express()
 
@@ -17,7 +16,6 @@ app.use(bodyParser.json())
 app.use(userRoutes)
 app.use(matchRoutes)
 app.use(relationshipRoutes)
-app.use(testRoutes)
 
 const mongoUri = 'mongodb+srv://josephtey:joe123@cluster0-8gz6y.mongodb.net/<dbname>?retryWrites=true&w=majority'
 mongoose.connect(mongoUri, {
@@ -32,6 +30,8 @@ mongoose.connection.on('connected', ()=>{
 mongoose.connection.on('error', (err)=>{
     console.log('Error connecting to mongo', err)
 })
+
+module.exports = app
 
 app.listen(3000, ()=>{
     console.log("Listening on port 3000")

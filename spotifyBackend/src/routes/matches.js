@@ -37,4 +37,8 @@ router.post('/newmatch', async (req, res)=>{
     }
 })
 
+router.get('/test', (req, res)=>{
+    res.send({message: "Success"})
+})
+
 module.exports = router
