@@ -2,15 +2,15 @@ import { spotifyCredentials } from './spotifyCredentials'
 import * as AuthSession from 'expo-auth-session';
 import { encode as btoa } from 'base-64';
 
-const scopesArr = ['user-modify-playback-state','user-read-currently-playing','user-read-playback-state','user-library-modify',
-                   'user-library-read','playlist-read-private','playlist-read-collaborative','playlist-modify-public',
-                   'playlist-modify-private','user-read-recently-played','user-top-read'];
+const scopesArr = ['user-modify-playback-state', 'user-read-currently-playing', 'user-read-playback-state', 'user-library-modify',
+  'user-library-read', 'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-public',
+  'playlist-modify-private', 'user-read-recently-played', 'user-top-read'];
 const scopes = scopesArr.join(' ');
 
 
 export const getTokens = async () => {
   try {
-    const authorizationCode = await getAuthorizationCode() 
+    const authorizationCode = await getAuthorizationCode()
     const credentials = spotifyCredentials
     const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
     const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -21,7 +21,7 @@ export const getTokens = async () => {
       },
       body: `grant_type=authorization_code&code=${authorizationCode}&redirect_uri=${
         credentials.redirectUri
-      }`,
+        }`,
     });
     const responseJson = await response.json();
     const {
@@ -33,9 +33,9 @@ export const getTokens = async () => {
     const expirationTime = new Date().getTime() + expiresIn * 1000;
 
     return {
-        accessToken,
-        refreshToken,
-        expirationTime
+      accessToken,
+      refreshToken,
+      expirationTime
     }
   } catch (err) {
     console.error(err);
@@ -46,7 +46,7 @@ export const getTokens = async () => {
 const getAuthorizationCode = async () => {
   try {
     const credentials = spotifyCredentials
-    const redirectUrl = AuthSession.getRedirectUrl(); 
+    const redirectUrl = AuthSession.getRedirectUrl();
     const result = await AuthSession.startAsync({
       authUrl:
         'https://accounts.spotify.com/authorize' +
@@ -66,41 +66,41 @@ const getAuthorizationCode = async () => {
 }
 
 export const refreshTokens = async (refreshToken) => {
-    try {
-      const credentials = spotifyCredentials;
-      const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
+  try {
+    const credentials = spotifyCredentials;
+    const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
 
-      // Check if token is still valid
-      const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-          Authorization: `Basic ${credsB64}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `grant_type=refresh_token&refresh_t oken=${refreshToken}`,
-      });
-      const responseJson = await response.json();
+    // Check if token is still valid
+    const response = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credsB64}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `grant_type=refresh_token&refresh_t oken=${refreshToken}`,
+    });
+    const responseJson = await response.json();
 
-      // If not valid, get new token
-      if (responseJson.error) {
-        return await getTokens();
-      } else {
-        const {
-          access_token: newAccessToken,
-          refresh_token: newRefreshToken,
-          expires_in: expiresIn,
-        } = responseJson;
-  
-        const expirationTime = new Date().getTime() + expiresIn * 1000;
+    // If not valid, get new token
+    if (responseJson.error) {
+      return await getTokens();
+    } else {
+      const {
+        access_token: newAccessToken,
+        refresh_token: newRefreshToken,
+        expires_in: expiresIn,
+      } = responseJson;
 
-        return {
-            accessToken,
-            newRefreshToken,
-            expirationTime
-        }
+      const expirationTime = new Date().getTime() + expiresIn * 1000;
+
+      return {
+        accessToken,
+        newRefreshToken,
+        expirationTime
       }
-    } catch (err) {
-      console.error(err)
-      return err
     }
+  } catch (err) {
+    console.error(err)
+    return err
   }
+}

@@ -1,21 +1,13 @@
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import LoginScreen from './src/screens/LoginScreen'
-import FriendsScreen from './src/screens/FriendsScreen'
-import FriendScreen from './src/screens/FriendScreen'
-import CurrentUserScreen from './src/screens/CurrentUserScreen'
-import NotificationsScreen from './src/screens/NotificationsScreen'
-import InitialiseScreen from './src/screens/InitialiseScreen'
-import SearchScreen from './src/screens/SearchScreen'
+import LoginScreen from '../screens/LoginScreen'
+import InitialiseScreen from '../screens/InitialiseScreen'
+import HomeScreen from '../screens/HomeScreen'
 
 const navigator = createStackNavigator({
   Login: LoginScreen,
-  Friends: FriendsScreen,
-  Friend: FriendScreen,
-  CurrentUser: CurrentUserScreen,
   Initialise: InitialiseScreen,
-  Notifications: NotificationsScreen,
-  Search: SearchScreen
+  Home: HomeScreen
 },
   {
     initialRouteName: 'Login',
@@ -29,4 +21,4 @@ const navigator = createStackNavigator({
   }
 );
 
-export const App = createAppContainer(navigator)
+export default createAppContainer(navigator)

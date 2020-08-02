@@ -1,71 +1,47 @@
-import React, {useState, useEffect, useContext} from 'react'
-import { ActivityIndicator } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
-import DBContext from '../context/dbContext' 
+import { connect } from 'react-redux'
+import { generateProfile } from '../actions/auth'
+
+const mapDispatchToProps = { generateProfile }
+
+const mapStateToProps = (state) => {
+  return state
+}
 
 
-const InitialiseScreen = ({navigation}) => {
-    const { spotifyProfile, initialiseUser, getTopArtists, getTopTracks, getTopGenres, getCurrentUserData } = useContext(DBContext)
-    
-    const [loading, setLoading] = useState(false)
-    const [username, setUsername] = useState("")
+const InitialiseScreen = (props) => {
 
-    useEffect(()=>{
-        const listener = navigation.addListener('didFocus', ()=>{
-            setLoading(false)
-        })
+  const [username, setUsername] = useState()
 
-        return () => {
-            listener.remove()
-        }
-    }, [])
-
-    const generateUserProfile = async () => {
-        // Loading
-        setLoading(true)
-
-        // Generate Spotify Data to Initialise User
-        let {artists, genres} = await getTopArtists()
-        let topGenres = getTopGenres(genres)
-        let topTracks = await getTopTracks()
-        let response = await initialiseUser(spotifyProfile.display_name, username, spotifyProfile.id, JSON.stringify(topGenres), JSON.stringify(artists), JSON.stringify(topTracks))
-
-        // Get user data
-        await getCurrentUserData(spotifyProfile.id) 
-
-        // Navigate to next screen when done
-        navigation.navigate('Friends')
+  useEffect(() => {
+    if (props.auth.userData) {
+      props.navigation.navigate('Home')
     }
+    console.log(props)
+  }, [props])
 
-    if (loading) {
-        return (
-            <Container>
-                <ActivityIndicator animating color="#1DB954"/>
-            </Container>
-        )
-    } else  {
-        return (
-            <Container>
-                <Title>Generate a New Profile</Title>
-                <CustomTextbox 
-                    placeholder="username"
-                    placeholderTextColor="#727272"
-                    autoCorrect={false}
-                    autoCapitalize="none"
-                    onChangeText={(value)=> {
-                        setUsername(value)
-                    }}
-                />
-                <SecondaryButton 
-                    onPress={()=>{
-                        generateUserProfile()
-                    }}
-                >
-                    <SecondaryButtonText>Get Started</SecondaryButtonText>
-                </SecondaryButton>
-            </Container>
-        )
-    }
+  return (
+    <Container>
+      <Title>Generate a New Profile</Title>
+      <CustomTextbox
+        placeholder="username"
+        placeholderTextColor="#727272"
+        autoCorrect={false}
+        autoCapitalize="none"
+        onChangeText={(value) => {
+          setUsername(value)
+        }}
+      />
+      <SecondaryButton
+        onPress={() => {
+          props.generateProfile(username, props.auth.spotifyProfile)
+        }}
+      >
+        <SecondaryButtonText>Get Started</SecondaryButtonText>
+      </SecondaryButton>
+    </Container>
+  )
 }
 
 
@@ -107,5 +83,5 @@ const Title = styled.Text`
 
 
 
-export default InitialiseScreen
+export default connect(mapStateToProps, mapDispatchToProps)(InitialiseScreen)
 

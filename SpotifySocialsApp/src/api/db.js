@@ -5,9 +5,10 @@ const db = axios.create({
 });
 
 export const initialiseUser = async (displayName, username, spotifyId, topGenres, topArtists, topTracks) => {
-    const response = await db.post('/inituser', { displayName, username, spotifyId, topGenres, topArtists, topTracks })
+    const userData = { displayName, username, spotifyId, topGenres, topArtists, topTracks }
+    const response = await db.post('/inituser', userData)
 
-    return response.data.message
+    return userData
 };
 
 export const checkIfUserExists = async (spotifyId) => {
@@ -16,13 +17,30 @@ export const checkIfUserExists = async (spotifyId) => {
     return response.data.result
 }
 
+export const getUser = async (spotifyId) => {
+    const response = await db.post('/user', { spotifyId })
+    let user = response.data
 
-export const getCurrentUserData = async (spotifyId) => {
-    const userData = await getUser(spotifyId)
-    setUserData(userData)
+    // Data Processing
+    let topGenres = JSON.parse(response.data.topGenres)
+    let arr = []
+    for (let key in topGenres) {
+        arr.push([key, topGenres[key]])
+    }
 
-    return userData
-}
+    arr.sort(function compare(kv1, kv2) {
+        return kv1[1] - kv2[1]
+    })
+
+    let sortedGenres = []
+    for (let i in arr) {
+        sortedGenres.push(arr[i][0])
+    }
+
+    // Set processed data
+    user.topGenres = sortedGenres
+    return user
+};
 
 export const getFriends = async (currentUser) => {
     const response = await db.post('/getfriends', { currentUser })
@@ -54,31 +72,6 @@ export const searchUsers = async (username) => {
     const response = await db.post('/searchusers', { username })
 
     return response.data
-};
-
-export const getUser = async (spotifyId) => {
-    const response = await db.post('/user', { spotifyId })
-    let user = response.data
-
-    // Data Processing
-    let topGenres = JSON.parse(response.data.topGenres)
-    let arr = []
-    for (let key in topGenres) {
-        arr.push([key, topGenres[key]])
-    }
-
-    arr.sort(function compare(kv1, kv2) {
-        return kv1[1] - kv2[1]
-    })
-
-    let sortedGenres = []
-    for (let i in arr) {
-        sortedGenres.push(arr[i][0])
-    }
-
-    // Set processed data
-    user.topGenres = sortedGenres
-    return user
 };
 
 
