@@ -1,32 +1,32 @@
-import React, {useEffect, useState, useContext} from 'react'
-import { ActivityIndicator, StatusBar, TouchableOpacity, View, Text, StyleSheet, Button, TextInput} from 'react-native'
+import React, { useEffect, useState, useContext } from 'react'
+import { ActivityIndicator, StatusBar, TouchableOpacity, View, Text, StyleSheet, Button, TextInput } from 'react-native'
 import styled from "styled-components";
 import { getTokens } from '../api/spotifyAuth'
 import DBContext from '../context/dbContext'
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false)
     const { spotifyObject, userAuthData, getCurrentUserData, setUserAuthData, checkIfUserExists, getProfileInfo, spotifyProfile, createSpotifyObject, initialiseUser, getTopArtists, getTopTracks, getTopGenres } = useContext(DBContext)
 
     const getSpotifyAPIToken = async () => {
         let response = await getTokens();
-        
+
         await createSpotifyObject(response.accessToken)
         setUserAuthData(response)
     }
 
     // Before logging in
-    useEffect(()=>{
-        const listener = navigation.addListener('didFocus', ()=>{
+    useEffect(() => {
+        const listener = navigation.addListener('didFocus', () => {
             setLoading(false)
         })
 
         const connectToSpotify = async () => {
             if (userAuthData && new Date().getTime() > userAuthData.expirationTime) {
                 getSpotifyAPIToken()
-            } 
+            }
         }
         connectToSpotify()
 
@@ -37,7 +37,7 @@ const LoginScreen = ({navigation}) => {
     }, [])
 
     // Immediately after logging in, after getting API TOKEN
-    useEffect(()=>{
+    useEffect(() => {
         const getSpotifyData = async () => {
             // Get user profile 
             let userInfo = await getProfileInfo()
@@ -47,10 +47,10 @@ const LoginScreen = ({navigation}) => {
 
             // Re-direct based on this
             if (exist) {
-                 // Get user data
-                 await getCurrentUserData(userInfo.id) 
+                // Get user data
+                await getCurrentUserData(userInfo.id)
 
-                 // Navigate to main page
+                // Navigate to main page
                 navigation.navigate('Friends')
             } else {
                 navigation.navigate('Initialise')
@@ -60,7 +60,7 @@ const LoginScreen = ({navigation}) => {
         if (userAuthData) {
             setLoading(true)
             getSpotifyData()
-        } 
+        }
 
     }, [userAuthData])
 
@@ -68,27 +68,27 @@ const LoginScreen = ({navigation}) => {
     if (loading) {
         return (
             <Container>
-                <ActivityIndicator animating color="#1DB954"/>
+                <ActivityIndicator animating color="#1DB954" />
             </Container>
         )
-    // For users who are NOT logged in
+        // For users who are NOT logged in
     } else {
         return (
-            <Container> 
-                <CustomButton 
-                    onPress={()=>{
+            <Container>
+                <CustomButton
+                    onPress={() => {
                         getSpotifyAPIToken()
                     }}
                 >
                     <ButtonText>
                         Spotify
-                        <AntDesign name="login" size={15} color="white"/> 
+                        <AntDesign name="login" size={15} color="white" />
                     </ButtonText>
                 </CustomButton>
             </Container>
         )
     }
-    
+
 }
 
 const Container = styled.View`
@@ -111,20 +111,5 @@ const ButtonText = styled.Text`
     color: white;
     font-weight: bold
 `
-
-
-const styles = StyleSheet.create({
-    screenStyle: {
-        margin: 25
-    },
-    textbox: {
-        borderWidth: 1,
-        borderColor: 'black',
-        marginVertical: 10,
-        fontSize: 15,
-        padding: 10
-    }
-})
-
 export default LoginScreen
 
