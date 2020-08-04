@@ -123,7 +123,7 @@ const HomeScreen = (props) => {
 const ContentTitle = styled.Text`
   font-family: TTCommons-Bold;
   font-size: 20px;
-  padding: 30px;
+  padding: 15px;
   text-align: center;
 `
 
@@ -134,6 +134,7 @@ const Content = styled.View`
   box-shadow: 0 -10px 20px rgba(0,0,0,0.15)
   margin-top: -15px;
   flex: 1;
+  padding: 20px;
 `
 
 const Navigation = styled.View`
@@ -160,36 +161,44 @@ const Container = styled.View`
 `;
 
 const FriendCard = styled.View`
-padding: 15px 20px;
-margin: 3px 0;
 border-radius: 5px;
-background: #303030;
+background: rgba(0,0,0,0.03);
 flex-direction: row;
 alignItems: center;
-justifyContent: space-between
+justifyContent: space-between;
 `
 const FriendLeft = styled.View`
+padding: 15px 20px;
 flex: 4
 `
 const FriendRight = styled.View`
-flex: 1
+flex: 1;
+background: #2ac940;
+height: 100%;
+border-top-right-radius: 5px;
+border-bottom-right-radius: 5px;
+justify-content: center;
+align-items: center;
 `
-
 const FriendStats = styled.Text`
-color: #1DB954;
-font-size: 15px;
-font-weight: bold;
-text-align: right
+color: white;
+font-size: 20px;
+margin-top: 7px;
+font-family: TTCommons-Bold;
+text-align: right;
 `
 const FriendMain = styled.Text`
 color: white;
-font-weight: bold;
-font-size: 18px
+font-family: TTCommons-Bold;
+color: #171e31;
+font-size: 20px;
+margin-bottom: -4px;
 `
 
 const FriendCaption = styled.Text`
-color: grey;
-font-size: 13px
+color: rgba(0,0,0,0.32);
+font-size: 15px;
+font-family: TTCommons-Medium;
 `
 
 const TopBar = styled.View`
