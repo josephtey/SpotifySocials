@@ -21,8 +21,10 @@ export const attemptLogin = () => async dispatch => {
 
     if (exist) {
       const userData = await getUser(spotifyProfile.id)
+
       dispatch(loginSuccess(userData, spotifyProfile, 'Home'))
     } else {
+
       dispatch(loginSuccess(null, spotifyProfile, 'Initialise'))
     }
 

@@ -6,7 +6,9 @@ import { generateProfile } from '../actions/auth'
 const mapDispatchToProps = { generateProfile }
 
 const mapStateToProps = (state) => {
-  return state
+  return {
+    ...state.auth
+  }
 }
 
 
@@ -15,17 +17,28 @@ const InitialiseScreen = (props) => {
   const [username, setUsername] = useState()
 
   useEffect(() => {
-    if (props.auth.userData) {
+    if (props.userData) {
       props.navigation.navigate('Home')
     }
+
     console.log(props)
   }, [props])
 
   return (
     <Container>
-      <Title>Generate a New Profile</Title>
+      <Name>
+        {props.spotifyProfile.display_name}
+      </Name>
+      <ProfilePicture
+        source={{
+          uri: props.spotifyProfile.images.length > 0
+            ? props.spotifyProfile.images[0].url
+            : 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640'
+        }}
+      />
+      <Title>Get Started</Title>
       <CustomTextbox
-        placeholder="username"
+        placeholder="User Name"
         placeholderTextColor="#727272"
         autoCorrect={false}
         autoCapitalize="none"
@@ -35,53 +48,85 @@ const InitialiseScreen = (props) => {
       />
       <SecondaryButton
         onPress={() => {
-          props.generateProfile(username, props.auth.spotifyProfile)
+          props.generateProfile(username, props.spotifyProfile)
         }}
       >
-        <SecondaryButtonText>Get Started</SecondaryButtonText>
+        <SecondaryButtonText>Generate Profile</SecondaryButtonText>
       </SecondaryButton>
+
+      <Disclaimer>
+        We will use your Spotify data to generate your profile
+      </Disclaimer>
     </Container>
   )
 }
 
 
 const CustomTextbox = styled.TextInput`
-    background: #3a3a3a;
-    border-radius: 10px;
+    background: #101626;
+    border-radius: 5px;
     width: 60%;
-    padding: 10px;
-    margin: 10px 0;
-    color: white
+    padding: 15px;
+    margin-bottom: 20px;
+    color: rgba(255, 255, 255, 0.4)
 `
 const Container = styled.View`
-    margin: 25px;
     alignItems: center;
     justifyContent: center;
-    flex: 1
+    flex: 1;
+    background: #171E31
 `;
 
 const SecondaryButton = styled.TouchableOpacity`
-    background: #1DB954;
-    border-radius: 10px;
+    border-radius: 100px;
+    border: 2px solid #F6527C;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    width: 60%
+    padding: 15px 20px;
+    width: 40%;
+    margin-top: 40px;
 `
 
 const SecondaryButtonText = styled.Text`
-    color: white;
-    font-weight: bold;
-    text-align: center
+    color: #F6527C;
+    text-align: center;
+    font-family: TTCommons-Medium;
+    margin-top:5px;
+    font-size:15px;
 `
 
 const Title = styled.Text`
-    font-size: 15px;
-    font-weight: bold;
-    margin: 10px 0;
-    color: white
+    font-size: 50px;
+    font-family: TTCommons-Bold;
+    text-align: center;
+    margin-top: 10px;
+    color: #1EB955
 `
 
+const ProfilePicture = styled.Image`
+  width: 110px;
+  height: 110px;
+  border-radius: 100px;
+  margin-bottom: 40px;
+`
 
+const Name = styled.Text`
+    position: absolute;
+    top: 50px;
+    left: 15px;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: TTCommons-Medium
+    font-size: 15px;
+`
+
+const Disclaimer = styled.Text`
+  position: absolute;
+  bottom: 100px;
+  width: 60%;
+  color: rgba(255, 255, 255, 0.3);
+  font-family: TTCommons-Light
+  font-size: 15px;
+  text-align: center
+`
 
 export default connect(mapStateToProps, mapDispatchToProps)(InitialiseScreen)
 

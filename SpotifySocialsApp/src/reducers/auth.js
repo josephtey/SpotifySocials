@@ -28,6 +28,7 @@ export default (state = initialState, action) => {
       return { ...state, isLoading: false, userData: action.userData, redirect: action.redirect }
     case GENERATE_PROFILE_ERROR:
       return { ...state, isLoading: false, token: action.error }
+    default:
+      return state
   }
-  return state
 }

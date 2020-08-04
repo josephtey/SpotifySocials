@@ -1,57 +1,109 @@
 import React, { useEffect, useState } from 'react'
+import { Animated, Easing } from 'react-native'
 import styled from "styled-components";
-import { AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { connect } from 'react-redux'
 import { attemptLogin } from '../actions/auth'
+
 
 const mapDispatchToProps = { attemptLogin }
 
 const mapStateToProps = (state) => {
-    return state
+    return {
+        ...state.auth
+    }
 }
 
 const LoginScreen = (props) => {
+    const [top, setTop] = useState(new Animated.Value(500))
+    const [opacity, setOpacity] = useState(new Animated.Value(0))
+
+    // Animation
     useEffect(() => {
-        if (props.auth.redirect) {
-            props.navigation.navigate('Initialise')
+        setTimeout(() => {
+            Animated.spring(top, {
+                toValue: 275,
+                speed: 2,
+                useNativeDriver: false
+            }).start()
+
+            Animated.timing(opacity, {
+                toValue: 1,
+                duration: 1000,
+                easing: Easing.inOut(Easing.ease),
+                useNativeDriver: false
+            }).start()
+        }, 500)
+    }, [])
+
+    useEffect(() => {
+        if (props.spotifyProfile) {
+            props.navigation.navigate(props.redirect)
         }
-        console.log(props)
     }, [props])
 
     return (
         <Container>
-            <CustomButton
+            <AnimatedTitle
+                style={{ top, opacity }}
+            >
+                Hello
+            </AnimatedTitle>
+            <LoginTextWrapper
                 onPress={() => {
                     props.attemptLogin()
                 }}
             >
-                <ButtonText>
-                    Spotify
-                    <AntDesign name="login" size={15} color="white" />
-                </ButtonText>
-            </CustomButton>
+
+                <AnimatedIconWrapper style={{ opacity }}>
+                    <Feather name="key" size={24} color="#f6527c" />
+                </AnimatedIconWrapper>
+
+                <AnimatedLoginText
+                    style={{ opacity }}
+                >
+                    Login with Spotify
+                </AnimatedLoginText>
+
+            </LoginTextWrapper>
         </Container>
     )
 
 }
 
+const IconWrapper = styled.View`
+    align-items: center
+    padding-bottom: 20px;
+`
+
 const Container = styled.View`
-    margin: 25px;
     alignItems: center;
     justifyContent: center;
-    flex: 1
+    flex: 1;
+    background: #171E31;
 `;
 
-const CustomButton = styled.TouchableOpacity`
-    background: #1DB954;
-    padding: 20px 30px;
-    border-radius: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5)
+const LoginText = styled.Text`
+    font-family: TTCommons-Regular;    
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 20px;
 `
 
-const ButtonText = styled.Text`
-    color: white;
-    font-weight: bold
+const Title = styled.Text`
+    font-family: TTCommons-DemiBold;
+    color: #1EB955;
+    font-size: 75px;
+    position: absolute;
 `
+
+const LoginTextWrapper = styled.TouchableOpacity`
+    position: absolute;
+    bottom: 240px
+`
+
+const AnimatedLoginText = Animated.createAnimatedComponent(LoginText)
+const AnimatedTitle = Animated.createAnimatedComponent(Title)
+const AnimatedIconWrapper = Animated.createAnimatedComponent(IconWrapper)
+
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
 

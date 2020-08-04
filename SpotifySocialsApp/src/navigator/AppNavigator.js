@@ -13,10 +13,7 @@ const navigator = createStackNavigator({
     initialRouteName: 'Login',
     mode: 'screen',
     defaultNavigationOptions: {
-      headerShown: false,
-      cardStyle: {
-        backgroundColor: '#191414'
-      }
+      headerShown: false
     }
   }
 );
