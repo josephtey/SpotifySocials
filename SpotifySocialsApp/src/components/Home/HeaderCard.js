@@ -28,7 +28,7 @@ const Title = styled.Text`
 const Caption = styled.Text`
   position: absolute;
   bottom: 5px;
-  right: 5px;
+  right: 10px;
   font-family: TTCommons-Medium;
   font-size: 15px;
   color: rgba(255, 255, 255, 0.33)
