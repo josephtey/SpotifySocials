@@ -12,20 +12,40 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     spotifyId: {
-        type: String, 
+        type: String,
         unique: true,
         required: true
     },
-    topGenres: {
-        type: String, 
+    currentTopArtists: {
+        type: Map,
         required: true
     },
-    topArtists: {
-        type: String, 
+    currentTopTracks: {
+        type: Map,
         required: true
     },
-    topTracks: {
-        type: String, 
+    currentTopGenres: {
+        type: Map,
+        required: true
+    },
+    currentAudioFeatures: {
+        type: Map,
+        required: true
+    },
+    allTimeTopArtists: {
+        type: Map,
+        required: true
+    },
+    allTimeTopTracks: {
+        type: Map,
+        required: true
+    },
+    allTimeTopGenres: {
+        type: Map,
+        required: true
+    },
+    allTimeAudioFeatures: {
+        type: Map,
         required: true
     }
 })

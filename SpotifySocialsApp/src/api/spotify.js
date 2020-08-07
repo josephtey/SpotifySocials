@@ -12,52 +12,78 @@ export const getProfileInfo = async () => {
   return profileInfo
 }
 
-export const getTopArtists = async () => {
-  const rawTopArtists = await sp.getMyTopArtists({ limit: 50, 'time_range': 'medium_term' })
-  const topArtists = rawTopArtists.items
-
-  const artists = []
-  const genres = []
-
-  for (artist in topArtists) {
-    artists.push({
-      name: topArtists[artist].name,
-      id: topArtists[artist].id
-    })
-
-    genres.push(topArtists[artist].genres)
-  }
-
-  return {
-    artists,
-    genres
-  }
+export const getTopArtists = async (timeframe) => {
+  const topArtists = await sp.getMyTopArtists({ limit: 50, 'time_range': timeframe })
+  return topArtists.items
 }
 
-export const getTopGenres = (genres) => {
-  genreCount = {}
-  for (artist in genres) {
-    for (genre in genres[artist]) {
-      if (genreCount[genres[artist][genre]]) {
-        genreCount[genres[artist][genre]] += 1
-      } else {
-        genreCount[genres[artist][genre]] = 1
-      }
+export const getTopTracks = async (timeframe) => {
+  const topTracks = await sp.getMyTopTracks({ limit: 50, 'time_range': timeframe })
+  return topTracks.items
+}
+
+export const getTopGenres = (artists) => {
+  // Create array
+  let allGenres = []
+
+  for (let i = 0; i < artists.length; i++) {
+    allGenres.push(...artists[i].genres)
+  }
+
+  // Counter
+  let genreCount = {}
+  for (let i = 0; i < allGenres.length; i++) {
+    if (genreCount[allGenres[i]]) {
+      genreCount[allGenres[i]] += 1
+    } else {
+      genreCount[allGenres[i]] = 1
     }
   }
 
   return genreCount
 }
 
-export const getTopTracks = async () => {
-  let topTracks = await sp.getMyTopTracks({ limit: 50 })
+export const getAudioFeatures = async (tracks) => {
+  // Params
+  const params = ["danceability", "energy"]//, "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "key", "mode", "duration_ms", "time_signature"]
 
-  topTracks = topTracks.items.map((track) => {
-    return {
-      name: track.name,
-      id: track.id
+  // Get Audio Features
+  let trackIds = []
+  for (let i = 0; i < tracks.length; i++) {
+    trackIds.push(tracks[i].id)
+  }
+
+  const rawAudioFeatures = await sp.getAudioFeaturesForTracks(trackIds)
+  const audioFeatures = rawAudioFeatures.audio_features
+
+  let avgAudioFeatures = {}
+  for (let i = 0; i < audioFeatures.length; i++) {
+    for (let j = 0; j < params.length; j++) {
+      let value = audioFeatures[i][params[j]]
+      let key = params[j]
+
+      // Only if param exists!
+      if (value) {
+
+        // If key exists in average object
+        if (avgAudioFeatures[key]) {
+
+          // Push to array
+          avgAudioFeatures[key].push(value)
+        } else {
+
+          // Setup array
+          avgAudioFeatures[key] = [value]
+        }
+      }
     }
-  })
+  }
 
-  return topTracks
+  // Calculate average
+  for (let feature in avgAudioFeatures) {
+    avgAudioFeatures[feature] = avgAudioFeatures[feature].reduce(function (p, c, i, a) { return p + (c / a.length) }, 0);
+  }
+  return avgAudioFeatures
+
 }
+

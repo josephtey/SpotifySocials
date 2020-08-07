@@ -4,11 +4,11 @@ const db = axios.create({
     baseURL: 'https://8ty11v60zg.execute-api.ap-southeast-2.amazonaws.com/dev/'
 });
 
-export const initialiseUser = async (displayName, username, spotifyId, topGenres, topArtists, topTracks) => {
-    const userData = { displayName, username, spotifyId, topGenres, topArtists, topTracks }
+export const initialiseUser = async (userData) => {
+    console.log(JSON.stringify(userData))
     const response = await db.post('/inituser', userData)
 
-    return userData
+    return response.data
 };
 
 export const checkIfUserExists = async (spotifyId) => {

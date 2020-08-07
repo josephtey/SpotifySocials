@@ -20,8 +20,6 @@ const InitialiseScreen = (props) => {
     if (props.userData) {
       props.navigation.navigate('Home')
     }
-
-    console.log(props)
   }, [props])
 
   return (

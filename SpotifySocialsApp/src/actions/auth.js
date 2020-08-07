@@ -1,5 +1,5 @@
 import { initialiseUser, checkIfUserExists, getUser } from '../api/db';
-import { initSpotify, getProfileInfo, getTopArtists, getTopGenres, getTopTracks } from '../api/spotify'
+import { initSpotify, getProfileInfo, getTopArtists, getTopGenres, getTopTracks, getAudioFeatures } from '../api/spotify'
 import { getTokens } from '../api/spotifyAuth'
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -45,13 +45,36 @@ export const generateProfile = (username, spotifyProfile) => async dispatch => {
   dispatch(generateProfileRequest);
   try {
     // Generate Spotify Data to Initialise User
-    const { artists, genres } = await getTopArtists()
-    const topGenres = getTopGenres(genres)
-    const topTracks = await getTopTracks()
-    const userData = await initialiseUser(spotifyProfile.display_name, username, spotifyProfile.id, JSON.stringify(topGenres), JSON.stringify(artists), JSON.stringify(topTracks))
+    const currentTopArtists = await getTopArtists('short_term')
+    const currentTopTracks = await getTopTracks('short_term')
+    const currentTopGenres = getTopGenres(currentTopArtists)
+    const currentAudioFeatures = await getAudioFeatures(currentTopTracks)
 
-    dispatch(generateProfileSuccess(userData, 'Home'))
+    const allTimeTopArtists = await getTopArtists('long_term')
+    const allTimeTopTracks = await getTopTracks('long_term')
+    const allTimeTopGenres = getTopGenres(allTimeTopArtists)
+    const allTimeAudioFeatures = await getAudioFeatures(allTimeTopTracks)
+
+    const userData = {
+      displayName: spotifyProfile.display_name,
+      username,
+      spotifyId: spotifyProfile.id,
+      currentTopArtists,
+      currentTopTracks,
+      currentTopGenres,
+      currentAudioFeatures,
+      allTimeTopArtists,
+      allTimeTopTracks,
+      allTimeTopGenres,
+      allTimeAudioFeatures
+    }
+    const response = await initialiseUser(userData)
+
+    if (response.message === "Success") {
+      dispatch(generateProfileSuccess(userData, 'Home'))
+    }
   } catch (error) {
+    console.log(error)
     dispatch(generateProfileError(error));
   }
 };
