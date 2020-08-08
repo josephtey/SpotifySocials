@@ -22,14 +22,24 @@ router.post('/userexists', async (req, res) => {
 router.post('/inituser', async (req, res) => {
     const userData = req.body
     try {
-        const user = new User(userData)
-        await user.save()
+        const user = await User.findOne({ spotifyId: userData.spotifyId })
+
+        if (user) {
+            const updatedUser = await User.findOneAndUpdate({ spotifyId: userData.spotifyId }, userData)
+        } else {
+            const newUser = new User(userData)
+            await newUser.save()
+        }
+
+        console.log("SUCCEEDED!!")
+        console.log(userData)
 
         return res.send({ message: "Success" })
 
     } catch (err) {
+        console.log("ERROR ENCOUNTERED: ")
         console.log(err)
-        return res.status(422).send(err.message)
+        return res.status(422).send({ message: "Error" })
     }
 
 })

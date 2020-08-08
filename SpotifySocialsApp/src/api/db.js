@@ -5,7 +5,6 @@ const db = axios.create({
 });
 
 export const initialiseUser = async (userData) => {
-    console.log(JSON.stringify(userData))
     const response = await db.post('/inituser', userData)
 
     return response.data
@@ -22,23 +21,23 @@ export const getUser = async (spotifyId) => {
     let user = response.data
 
     // Data Processing
-    let topGenres = JSON.parse(response.data.topGenres)
-    let arr = []
-    for (let key in topGenres) {
-        arr.push([key, topGenres[key]])
-    }
+    // let topGenres = JSON.parse(response.data.topGenres)
+    // let arr = []
+    // for (let key in topGenres) {
+    //     arr.push([key, topGenres[key]])
+    // }
 
-    arr.sort(function compare(kv1, kv2) {
-        return kv1[1] - kv2[1]
-    })
+    // arr.sort(function compare(kv1, kv2) {
+    //     return kv1[1] - kv2[1]
+    // })
 
-    let sortedGenres = []
-    for (let i in arr) {
-        sortedGenres.push(arr[i][0])
-    }
+    // let sortedGenres = []
+    // for (let i in arr) {
+    //     sortedGenres.push(arr[i][0])
+    // }
 
     // Set processed data
-    user.topGenres = sortedGenres
+    // user.topGenres = sortedGenres
     return user
 };
 

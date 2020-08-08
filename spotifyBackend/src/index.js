@@ -5,13 +5,16 @@ require('./models/Relationship')
 const express = require('serverless-express/express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const userRoutes = require('./routes/users')
 const matchRoutes = require('./routes/matches')
 const relationshipRoutes = require('./routes/relationships')
 
+
 const app = express()
 
+app.use(cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(userRoutes)
 app.use(matchRoutes)

@@ -21,13 +21,13 @@ export default (state = initialState, action) => {
     case LOGIN_SUCCESS:
       return { ...state, isLoading: false, userData: action.userData, spotifyProfile: action.spotifyProfile, redirect: action.redirect }
     case LOGIN_ERROR:
-      return { ...state, isLoading: false, token: action.error }
+      return { ...state, isLoading: false, error: action.error }
     case GENERATE_PROFILE_REQUEST:
       return { ...state, isLoading: true }
     case GENERATE_PROFILE_SUCCESS:
       return { ...state, isLoading: false, userData: action.userData, redirect: action.redirect }
     case GENERATE_PROFILE_ERROR:
-      return { ...state, isLoading: false, token: action.error }
+      return { ...state, isLoading: false, error: action.error }
     default:
       return state
   }

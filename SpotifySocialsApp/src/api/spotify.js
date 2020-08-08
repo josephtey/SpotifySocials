@@ -45,7 +45,7 @@ export const getTopGenres = (artists) => {
 
 export const getAudioFeatures = async (tracks) => {
   // Params
-  const params = ["danceability", "energy"]//, "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "key", "mode", "duration_ms", "time_signature"]
+  const params = ["danceability", "energy", "loudness", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "key", "mode", "duration_ms", "time_signature"]
 
   // Get Audio Features
   let trackIds = []

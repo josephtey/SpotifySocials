@@ -17,11 +17,11 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     currentTopArtists: {
-        type: Map,
+        type: Array,
         required: true
     },
     currentTopTracks: {
-        type: Map,
+        type: Array,
         required: true
     },
     currentTopGenres: {
@@ -33,11 +33,11 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     allTimeTopArtists: {
-        type: Map,
+        type: Array,
         required: true
     },
     allTimeTopTracks: {
-        type: Map,
+        type: Array,
         required: true
     },
     allTimeTopGenres: {

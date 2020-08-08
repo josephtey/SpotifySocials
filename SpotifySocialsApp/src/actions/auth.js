@@ -68,6 +68,8 @@ export const generateProfile = (username, spotifyProfile) => async dispatch => {
       allTimeTopGenres,
       allTimeAudioFeatures
     }
+
+
     const response = await initialiseUser(userData)
 
     if (response.message === "Success") {
