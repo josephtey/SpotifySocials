@@ -6,18 +6,53 @@ const matchSchema = new mongoose.Schema({
         unique: false,
         required: true
     },
-    comparedUser: {
+    otherUser: {
         type: String,
         unique: false,
         required: true
     },
-    compatibilityPercentage: {
-        type: Number, 
+    dateMatched: {
+        type: Number,
         unique: false,
         required: true
     },
-    dateMatched: {
-        type: Number, 
+    genreScore: {
+        type: Number,
+        unique: false,
+        required: true
+    },
+    trackScore: {
+        type: Number,
+        unique: false,
+        required: true
+    },
+    artistScore: {
+        type: Number,
+        unique: false,
+        required: true
+    },
+    audioFeatureScore: {
+        type: Number,
+        unique: false,
+        required: true
+    },
+    genreDetails: {
+        type: Map,
+        unique: false,
+        required: true
+    },
+    artistDetails: {
+        type: Map,
+        unique: false,
+        required: true
+    },
+    trackDetails: {
+        type: Map,
+        unique: false,
+        required: true
+    },
+    overallScore: {
+        type: Number,
         unique: false,
         required: true
     }

@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('serverless-express/express')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 
@@ -59,6 +59,5 @@ router.post('/user', async (req, res) => {
 
     res.send(user)
 })
-
 
 module.exports = router

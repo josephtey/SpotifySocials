@@ -8,9 +8,10 @@ provider:
 # you can overwrite defaults here
 #  stage: dev
   region: ap-southeast-2
-
+  
 plugins:
   - serverless-express
+  - serverless-offline
 
 functions:
   app:
