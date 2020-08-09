@@ -4,59 +4,7 @@ const Relationship = mongoose.model('Relationship')
 const User = mongoose.model('User')
 
 const router = express.Router()
-
-router.post('/addfriend', async (req, res) => {
-    const { currentUser, otherUser } = req.body
-    try {
-        // Check if friendship already exists
-        const friendship = await Relationship.findOne().or([{ currentUser, otherUser }, { currentUser: otherUser, otherUser: currentUser }])
-
-        if (!friendship) {
-            // Create new DB instance 
-            const newFriendship = new Relationship({ currentUser, otherUser, type: 'pending' })
-            await newFriendship.save()
-
-            res.send({ message: "Success" })
-        } else {
-            res.send({ message: "Friendship already exists!" })
-        }
-
-
-    } catch (err) {
-        res.send(err)
-    }
-
-})
-
-router.post('/acceptfriend', async (req, res) => {
-    // Current User is the person who SENT the friend request
-    const { currentUser, otherUser } = req.body
-
-    try {
-        // Update to friends status
-        await Relationship.findOneAndUpdate({ currentUser, otherUser }, { type: 'friends' })
-        res.send({ message: "Success" })
-
-    } catch (err) {
-        res.send(err)
-    }
-})
-
-router.post('/rejectfriend', async (req, res) => {
-    // Current User is the person who SENT the friend request
-    const { currentUser, otherUser } = req.body
-
-    try {
-        // Update to friends status
-        await Relationship.findOneAndDelete({ currentUser, otherUser })
-        res.send({ message: "Success" })
-
-    } catch (err) {
-        res.send(err)
-    }
-})
-
-router.post('/getfriends', async (req, res) => {
+router.post('/getFriends', async (req, res) => {
     const { currentUser } = req.body
 
     Relationship.find({ type: 'friends' }).or([{ currentUser }, { otherUser: currentUser }])
@@ -83,7 +31,58 @@ router.post('/getfriends', async (req, res) => {
         .catch(error => { res.send(error) })
 })
 
-router.post('/getfriendrequests', async (req, res) => {
+router.post('/addFriend', async (req, res) => {
+    const { currentUser, otherUser } = req.body
+    try {
+        // Check if friendship already exists
+        const friendship = await Relationship.findOne().or([{ currentUser, otherUser }, { currentUser: otherUser, otherUser: currentUser }])
+
+        if (!friendship) {
+            // Create new DB instance 
+            const newFriendship = new Relationship({ currentUser, otherUser, type: 'pending' })
+            await newFriendship.save()
+
+            res.send({ message: "Success" })
+        } else {
+            res.send({ message: "Friendship already exists!" })
+        }
+
+
+    } catch (err) {
+        res.send(err)
+    }
+
+})
+
+router.post('/acceptFriendRequest', async (req, res) => {
+    // Current User is the person who SENT the friend request
+    const { currentUser, otherUser } = req.body
+
+    try {
+        // Update to friends status
+        await Relationship.findOneAndUpdate({ currentUser, otherUser }, { type: 'friends' })
+        res.send({ message: "Success" })
+
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+router.post('/rejectFriendRequest', async (req, res) => {
+    // Current User is the person who SENT the friend request
+    const { currentUser, otherUser } = req.body
+
+    try {
+        // Update to friends status
+        await Relationship.findOneAndDelete({ currentUser, otherUser })
+        res.send({ message: "Success" })
+
+    } catch (err) {
+        res.send(err)
+    }
+})
+
+router.post('/getFriendRequests', async (req, res) => {
 
     // Other user is the user who receives the friend request
     const { otherUser } = req.body

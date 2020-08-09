@@ -5,7 +5,7 @@ const User = mongoose.model('User')
 
 const router = express.Router()
 
-router.post('/getmatches', async (req, res) => {
+router.post('/getAllMatches', async (req, res) => {
     const { currentUser } = req.body
 
     Match.find({ currentUser }, (err, matches) => {
@@ -13,10 +13,10 @@ router.post('/getmatches', async (req, res) => {
     })
 })
 
-router.post('/getusermatches', async (req, res) => {
-    const { currentUser, comparedUser } = req.body
+router.post('/getSpecificMatches', async (req, res) => {
+    const { currentUser, otherUser } = req.body
 
-    Match.find({ currentUser, comparedUser }, (err, matches) => {
+    Match.find({ currentUser, otherUser }, (err, matches) => {
         matches.sort(function (a, b) {
             return b.dateMatched - a.dateMatched
         })
@@ -58,109 +58,115 @@ function cosinesim(A, B) {
     return similarity;
 }
 
-router.post('/newmatch', async (req, res) => {
-    const { currentUsername, otherUsername } = req.body
+router.post('/newMatch', async (req, res) => {
+    const { currentUser, otherUser } = req.body
     try {
         // Get both users' data
-        const currentUser = await User.findOne({ username: currentUsername }).lean().exec();
-        const otherUser = await User.findOne({ username: otherUsername }).lean().exec();
+        const currentUserData = await User.findOne({ username: currentUser }).lean().exec();
+        const otherUserData = await User.findOne({ username: otherUser }).lean().exec();
 
         // Compare Current Genres
-        const currentUserGenres = calculateGenreDistribution(currentUser.currentTopGenres, currentUser.currentTopArtists.length)
-        const otherUserGenres = calculateGenreDistribution(otherUser.currentTopGenres, otherUser.currentTopArtists.length)
+        const currentUserGenres = calculateGenreDistribution(currentUserData.currentTopGenres, currentUserData.currentTopArtists.length)
+        const otherUserGenres = calculateGenreDistribution(otherUserData.currentTopGenres, otherUserData.currentTopArtists.length)
 
-        let sameGenres = {}
+        let genreDetail = [], genreScore = 0;
         for (currentUserGenre in currentUserGenres) {
             for (otherUserGenre in otherUserGenres) {
                 if (currentUserGenre === otherUserGenre) {
-                    if (!sameGenres[currentUserGenre]) {
-                        sameGenres[currentUserGenre] = {
-                            "currentUser": currentUserGenres[currentUserGenre],
-                            "otherUser": otherUserGenres[otherUserGenre]
-                        }
+                    const indvGenreScore =
+                        (currentUserGenres[currentUserGenre] + otherUserGenres[otherUserGenre])
+                        - Math.abs(currentUserGenres[currentUserGenre] - otherUserGenres[otherUserGenre])
+
+                    const genre = {
+                        "genre": currentUserGenre,
+                        "currentUser": currentUserGenres[currentUserGenre],
+                        "otherUser": otherUserGenres[otherUserGenre],
+                        "score": indvGenreScore
+                    }
+
+                    if (!genreDetail.includes(genre)) {
+                        genreDetail.push(genre)
+                        genreScore += indvGenreScore
                     }
 
                 }
             }
         }
 
-        let genreScore = 0;
-        for (genre in sameGenres) {
-            const indvGenreScore =
-                (sameGenres[genre].currentUser + sameGenres[genre].otherUser)
-                - Math.abs(sameGenres[genre].currentUser - sameGenres[genre].otherUser)
-
-            genreScore += indvGenreScore
-            sameGenres[genre].score = indvGenreScore
-        }
-
         genreScore = clamp(normalise(genreScore, 0, 350) * 4, 0, 4)
+        genreDetail = genreDetail.sort(function (a, b) {
+            return b.score - a.score
+        })
 
         // Compare Current Artists
-        const currentUserArtists = currentUser.currentTopArtists
-        const otherUserArtists = otherUser.currentTopArtists
+        const currentUserArtists = currentUserData.currentTopArtists
+        const otherUserArtists = otherUserData.currentTopArtists
 
-        let sameArtists = {}
+        let artistDetails = [], artistScore = 0;
         currentUserArtists.forEach((currentUserArtist, currentUserIndex) => {
             otherUserArtists.forEach((otherUserArtist, otherUserIndex) => {
                 if (currentUserArtist.id === otherUserArtist.id) {
-                    if (!sameArtists[currentUserArtist.id]) {
-                        sameArtists[currentUserArtist.id] = {
-                            artist: currentUserArtist.name,
-                            currentUser: currentUserIndex,
-                            otherUser: otherUserIndex
-                        }
+                    const indvArtistScore =
+                        100 - ((currentUserIndex + otherUserIndex)
+                            + Math.abs(currentUserIndex - otherUserIndex))
+
+                    const artist = {
+                        "id": currentUserArtist.id,
+                        "name": currentUserArtist.name,
+                        "currentUser": currentUserIndex,
+                        "otherUser": otherUserIndex,
+                        "score": indvArtistScore
+                    }
+
+                    if (!artistDetails.includes(artist)) {
+                        artistDetails.push(artist)
+                        artistScore += indvArtistScore
                     }
                 }
             })
         })
 
-        let artistScore = 0;
-        for (artist in sameArtists) {
-            const indvArtistScore =
-                100 - ((sameArtists[artist].currentUser + sameArtists[artist].otherUser)
-                    + Math.abs(sameArtists[artist].currentUser - sameArtists[artist].otherUser))
-
-            artistScore += indvArtistScore
-            sameArtists[artist].score = indvArtistScore
-        }
-
         artistScore = normalise(artistScore, 0, 400) * 2
+        artistDetails = artistDetails.sort(function (a, b) {
+            return b.score - a.score
+        })
 
         // Compare Current Tracks 
-        const currentUserTracks = currentUser.currentTopTracks
-        const otherUserTracks = otherUser.currentTopTracks
+        const currentUserTracks = currentUserData.currentTopTracks
+        const otherUserTracks = otherUserData.currentTopTracks
 
-        let sameTracks = {}
+        let trackDetails = [], trackScore = 0;
         currentUserTracks.forEach((currentUserTrack, currentUserIndex) => {
             otherUserTracks.forEach((otherUserTrack, otherUserIndex) => {
                 if (currentUserTrack.id === otherUserTrack.id) {
-                    if (!sameTracks[currentUserTrack.id]) {
-                        sameTracks[currentUserTrack.id] = {
-                            track: currentUserTrack.name,
-                            currentUser: currentUserIndex,
-                            otherUser: otherUserIndex
-                        }
+                    const indvTrackScore =
+                        100 - ((currentUserIndex + otherUserIndex)
+                            + Math.abs(currentUserIndex - otherUserIndex))
+
+                    const track = {
+                        "id": currentUserTrack.id,
+                        "name": currentUserTrack.name,
+                        "currentUser": currentUserIndex,
+                        "otherUser": otherUserIndex,
+                        "score": indvTrackScore
+                    }
+
+                    if (!trackDetails.includes(track)) {
+                        trackDetails.push(track)
+                        trackScore += indvTrackScore
                     }
                 }
             })
         })
 
-        let trackScore = 0;
-        for (track in sameTracks) {
-            const indvTrackScore =
-                100 - ((sameTracks[track].currentUser + sameTracks[track].otherUser)
-                    + Math.abs(sameTracks[track].currentUser - sameTracks[track].otherUser))
-
-            trackScore += indvTrackScore
-            sameTracks[track].score = indvTrackScore
-        }
-
         trackScore = normalise(trackScore, 0, 200) * 2
+        trackDetails = trackDetails.sort(function (a, b) {
+            return b.score - a.score
+        })
 
         // Compare Current Audio Features
-        const currentUserAudioFeatures = currentUser.currentAudioFeatures
-        const otherUserAudioFeatures = otherUser.currentAudioFeatures
+        const currentUserAudioFeatures = currentUserData.currentAudioFeatures
+        const otherUserAudioFeatures = otherUserData.currentAudioFeatures
         const featuresToCompare = {
             "danceability": [0, 1],
             "energy": [0, 1],
@@ -185,21 +191,19 @@ router.post('/newmatch', async (req, res) => {
 
         // Final Calculation
         const overallScore = (1 / (1 + Math.pow(Math.E, -((genreScore + artistScore + trackScore + audioFeatureScore) - 4)))) * 100
-        console.log(genreScore + artistScore + trackScore + audioFeatureScore)
-        console.log(overallScore)
 
         // Write to Mongo
         const matchData = {
-            currentUser: currentUsername,
-            otherUser: otherUsername,
+            currentUser: currentUser,
+            otherUser: otherUser,
             dateMatched: new Date().getTime(),
             genreScore,
             trackScore,
             artistScore,
             audioFeatureScore,
-            genreDetails: sameGenres,
-            artistDetails: sameArtists,
-            trackDetails: sameTracks,
+            genreDetails: genreDetail,
+            artistDetails: artistDetails,
+            trackDetails: trackDetails,
             overallScore: overallScore
         }
 

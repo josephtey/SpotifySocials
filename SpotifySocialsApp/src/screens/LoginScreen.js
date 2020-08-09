@@ -37,7 +37,6 @@ const LoginScreen = (props) => {
     }, [])
 
     useEffect(() => {
-        console.log(props)
         if (props.spotifyProfile) {
             props.navigation.navigate(props.redirect)
         }

@@ -4,7 +4,7 @@ const User = mongoose.model('User')
 
 const router = express.Router()
 
-router.post('/userexists', async (req, res) => {
+router.post('/userExists', async (req, res) => {
     const { spotifyId } = req.body
     try {
         const user = await User.findOne({ spotifyId })
@@ -19,7 +19,7 @@ router.post('/userexists', async (req, res) => {
 
 })
 
-router.post('/inituser', async (req, res) => {
+router.post('/initialiseUser', async (req, res) => {
     const userData = req.body
     try {
         const user = await User.findOne({ spotifyId: userData.spotifyId })
@@ -44,16 +44,19 @@ router.post('/inituser', async (req, res) => {
 
 })
 
-router.post('/searchusers', (req, res) => {
+router.post('/searchUsers', async (req, res) => {
     const { username } = req.body
 
-    User.find({ username: { $regex: "(?i)^" + username } }, 'spotifyId username displayName', (err, users) => {
-        console.log(users)
+    try {
+        const users = await User.find({ username: { $regex: "(?i)^" + username } }, 'spotifyId username displayName')
         res.send(users)
-    })
+
+    } catch (err) {
+        res.send(err)
+    }
 })
 
-router.post('/user', async (req, res) => {
+router.post('/getUser', async (req, res) => {
     const { spotifyId } = req.body
     let user = await User.findOne({ spotifyId })
 

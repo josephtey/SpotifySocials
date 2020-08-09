@@ -1,4 +1,4 @@
-import { getFriends } from '../api/db';
+import { getFriends, searchUsers } from '../api/db';
 
 export const GET_FRIENDS_REQUEST = 'GET_FRIENDS_REQUEST';
 export const GET_FRIENDS_SUCCESS = 'GET_FRIENDS_SUCCESS';
@@ -11,7 +11,7 @@ const getFriendsError = error => ({ type: GET_FRIENDS_ERROR, error });
 export const getFriendList = (username) => async dispatch => {
   dispatch(getFriendsRequest);
   try {
-    const friendList = await getFriends(username)
+    const friendList = await searchUsers("")
     dispatch(getFriendsSuccess(friendList))
 
   } catch (error) {

@@ -37,17 +37,17 @@ const matchSchema = new mongoose.Schema({
         required: true
     },
     genreDetails: {
-        type: Map,
+        type: Array,
         unique: false,
         required: true
     },
     artistDetails: {
-        type: Map,
+        type: Array,
         unique: false,
         required: true
     },
     trackDetails: {
-        type: Map,
+        type: Array,
         unique: false,
         required: true
     },

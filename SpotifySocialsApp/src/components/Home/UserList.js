@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View, ScrollView, Text } from 'react-native'
 import styled from "styled-components";
 
 const UserList = ({
   users,
+  matches,
   type
 }) => {
   return (
@@ -11,11 +12,22 @@ const UserList = ({
       <ContentTitle>
         {type}
       </ContentTitle>
+      <FriendList
+        showsVerticalScrollIndicator={false}
+      >
 
-      <FriendList>
         {users.map((friend, i) => {
+
+          const userMatches = matches.filter(item => item.otherUser === friend.username)
+          let latestUserMatch = null
+          if (userMatches.length > 0) {
+            latestUserMatch = userMatches.sort(function (a, b) {
+              return b.dateMatched - a.dateMatched
+            })[0]
+          }
+
           return (
-            <TouchableOpacity
+            <User
               key={i}
             >
               <FriendCard>
@@ -27,16 +39,18 @@ const UserList = ({
                     @{friend.username}
                   </FriendCaption>
                 </FriendLeft>
-                <FriendRight>
-                  <FriendStats>
-                    20%
-                    </FriendStats>
-                </FriendRight>
+                {latestUserMatch ?
+                  <FriendRight>
+                    <FriendStats>
+                      {Math.round(latestUserMatch.overallScore)}%
+                  </FriendStats>
+                  </FriendRight>
+                  : null}
               </FriendCard>
               <ProgressLine
-                progress={1}
+                progress={latestUserMatch ? latestUserMatch.overallScore : 0}
               />
-            </TouchableOpacity>
+            </User>
           )
         })}
       </FriendList>
@@ -46,13 +60,16 @@ const UserList = ({
 
 export default UserList
 
-
+const User = styled.TouchableOpacity`
+  margin-bottom: 15px;
+`
 const FriendCard = styled.View`
 border-radius: 5px;
 background: rgba(0,0,0,0.03);
 flex-direction: row;
 alignItems: center;
 justifyContent: space-between;
+height: 70px;
 `
 const FriendLeft = styled.View`
 padding: 15px 20px;
@@ -101,13 +118,11 @@ const ContentTitle = styled.Text`
 const ProgressLine = styled.View`
   height: 3px;
   background: #2ac940;
-  width: ${props => props.progress * 82.5}%;
+  width: ${props => (props.progress / 100) * 82.5}%;
   margin-top: -3px;
   border-bottom-left-radius: 5px;
 
 `
-
-
 const FriendList = styled.ScrollView`
-
+ margin-bottom: 60px
 `

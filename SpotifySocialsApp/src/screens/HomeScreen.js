@@ -4,16 +4,18 @@ import styled from "styled-components";
 import { connect } from 'react-redux'
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { getFriendList } from '../actions/friends'
+import { getAllMatches } from '../actions/profile'
 import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
 
-const mapDispatchToProps = { getFriendList }
+const mapDispatchToProps = { getFriendList, getAllMatches }
 
 const mapStateToProps = (state) => {
   return {
     spotifyProfile: state.auth.spotifyProfile,
     userData: state.auth.userData,
-    ...state.friends
+    ...state.friends,
+    ...state.profile
   }
 }
 
@@ -22,7 +24,12 @@ const HomeScreen = (props) => {
 
   useEffect(() => {
     props.getFriendList(props.userData.username)
+    props.getAllMatches(props.userData.username)
   }, [])
+
+  // useEffect(() => {
+  //   console.log(props.allMatches)
+  // }, [props])
 
   return (
     <Container>
@@ -100,6 +107,7 @@ const HomeScreen = (props) => {
         <UserList
           type="Compatibility"
           users={props.friendList}
+          matches={props.allMatches}
         />
       </Content>
     </Container>
