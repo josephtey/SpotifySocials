@@ -35,7 +35,7 @@ export const getUserMatch = (currentUser, otherUser) => async dispatch => {
     if (userMatches.length > 0) {
       dispatch(getUserMatchSuccess(userMatches[0]))
     } else {
-      return false
+      dispatch(generateNewMatch(currentUser, otherUser))
     }
 
   } catch (error) {

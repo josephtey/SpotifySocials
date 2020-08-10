@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
+import { ScrollView, SafeAreaView } from "react-native"
 import { connect } from 'react-redux'
 import { getUserMatch, generateNewMatch, getProfile } from '../actions/profile'
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
+
+const characterData = [
+  { strength: 1, intelligence: 250, luck: 1, stealth: 40, charisma: 50 },
+  { strength: 2, intelligence: 300, luck: 2, stealth: 80, charisma: 90 },
+  { strength: 5, intelligence: 225, luck: 3, stealth: 60, charisma: 120 }
+];
 
 const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile }
 
@@ -17,62 +25,54 @@ const mapStateToProps = (state) => {
   }
 }
 
-
 const UserScreen = (props) => {
 
   useEffect(() => {
-    const getUserMatch = async () => {
-
-      // Check if the user match exists
-      const matchExists = await props.getUserMatch(props.userData.username, props.navigation.getParam('username'))
-
-      // If match does not exist, generate new match
-      if (matchExists === false) {
-        props.generateNewMatch(props.userData.username, props.navigation.getParam('username'))
-      }
-    }
-
-    // Get profile
+    props.getUserMatch(props.userData.username, props.navigation.getParam('username'))
     props.getProfile(props.navigation.getParam('spotifyId'))
-
-    // Get user match, if it does not exist, generate one
-    getUserMatch()
-
   }, [])
 
   return (
     <Container>
-      <Header>
-        <UserProfile
-          source={{
-            uri: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
-          }}
-        />
-        <UserName>
-          {props.userProfile.username}
-        </UserName>
-      </Header>
-      <SubHeader>
-        <ProfileSummary>
-        </ProfileSummary>
+      <ScrollView>
+        <Header>
+          <UserProfile
+            source={{
+              uri: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
+            }}
+          />
+          <UserName>
+            {props.userProfile.username}
+          </UserName>
+        </Header>
+        <SubHeader>
+          <ProfileSummary>
+          </ProfileSummary>
 
-        <Comparison>
-          <ComparisonPercentage>
-            {Math.round(props.userMatch.overallScore)}%
+          <Comparison>
+            <ComparisonPercentage>
+              {Math.round(props.userMatch.overallScore)}%
           </ComparisonPercentage>
-          <ComparisonSubtitle>
-            similar
+            <ComparisonSubtitle>
+              similar
           </ComparisonSubtitle>
-        </Comparison>
-      </SubHeader>
+          </Comparison>
+        </SubHeader>
 
-      <AudioFeaturesPanel>
-        <AudioFeaturesIconBG />
-        <AudioFeaturesIconWrapper>
-          <Ionicons name="ios-musical-notes" size={30} color="#43568C" />
-        </AudioFeaturesIconWrapper>
+        <AudioFeaturesPanel>
+          <AudioFeaturesIconBG />
+          <AudioFeaturesIconWrapper>
+            <FontAwesome name="microphone" size={30} color="#43568C" />
+          </AudioFeaturesIconWrapper>
 
-      </AudioFeaturesPanel>
+          {props.userProfile.currentAudioFeatures ?
+            <AudioFeaturesRadarChart
+              graphData={[props.userData.currentAudioFeatures, props.userProfile.currentAudioFeatures]}
+            />
+            : null}
+
+        </AudioFeaturesPanel>
+      </ScrollView>
     </Container>
   )
 
@@ -93,10 +93,12 @@ const AudioFeaturesIconBG = styled.View`
 `
 const AudioFeaturesPanel = styled.View`
   background: #26304D;
-  height: 300px;
+  height: 350px;
   margin: 55px 15px;
   border-radius: 12px;
-  box-shadow: 10px 10px 30px rgba(67, 86, 140, 0.93)
+  box-shadow: 10px 10px 30px rgba(67, 86, 140, 0.93);
+  justifyContent: center;
+  alignItems: center;
 `
 
 const SubHeader = styled.View`
