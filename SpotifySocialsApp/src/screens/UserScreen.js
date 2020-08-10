@@ -6,11 +6,6 @@ import { getUserMatch, generateNewMatch, getProfile } from '../actions/profile'
 import { FontAwesome } from '@expo/vector-icons';
 import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
 
-const characterData = [
-  { strength: 1, intelligence: 250, luck: 1, stealth: 40, charisma: 50 },
-  { strength: 2, intelligence: 300, luck: 2, stealth: 80, charisma: 90 },
-  { strength: 5, intelligence: 225, luck: 3, stealth: 60, charisma: 120 }
-];
 
 const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile }
 
@@ -62,7 +57,7 @@ const UserScreen = (props) => {
         <AudioFeaturesPanel>
           <AudioFeaturesIconBG />
           <AudioFeaturesIconWrapper>
-            <FontAwesome name="microphone" size={30} color="#43568C" />
+            <FontAwesome name="microphone" size={27} color="#43568C" />
           </AudioFeaturesIconWrapper>
 
           {props.userProfile.currentAudioFeatures ?
@@ -80,8 +75,8 @@ const UserScreen = (props) => {
 }
 const AudioFeaturesIconWrapper = styled.View`
   position: absolute;
-  left: 50px;
-  top: -17px;
+  left: 52px;
+  top: -14px;
 `
 const AudioFeaturesIconBG = styled.View`
   padding: 35px;

@@ -34,7 +34,7 @@ const AudioFeaturesRadarChart = ({
       domain={{ y: [0, 1] }}
     >
       <VictoryGroup colorScale={["#2ac940", "#f6527c"]}
-        style={{ data: { fillOpacity: 0.2, strokeWidth: 4 } }}
+        style={{ data: { fillOpacity: 0.2, strokeWidth: 1.5 } }}
       >
         {data.map((data, i) => {
           return <VictoryArea key={i} data={data} />;
@@ -56,7 +56,7 @@ const AudioFeaturesRadarChart = ({
               labelPlacement="vertical"
               axisValue={i + 1} label={key}
               tickFormat={(t) => t}
-              tickValues={[0.25, 0.5, 0.75]}
+              tickValues={[0.33, 0.66]}
             />
           );
         })
