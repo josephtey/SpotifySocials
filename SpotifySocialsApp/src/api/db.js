@@ -71,11 +71,10 @@ export const getSpecificUserMatches = async (currentUser, otherUser) => {
     const response = await db.post('/getSpecificMatches', {
         currentUser, otherUser
     })
-
     return response.data
 }
 
-export const compareUsers = async (currentUser, otherUser) => {
+export const newMatch = async (currentUser, otherUser) => {
 
     const response = await db.post('/newMatch', {
         currentUser, otherUser

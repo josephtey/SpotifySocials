@@ -210,7 +210,7 @@ router.post('/newMatch', async (req, res) => {
         const newMatch = new Match(matchData)
         await newMatch.save()
 
-        return res.send({ message: "Success" })
+        return res.send(matchData)
 
     } catch (err) {
         console.log(err)

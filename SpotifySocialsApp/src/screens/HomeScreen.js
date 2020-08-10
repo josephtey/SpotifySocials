@@ -108,6 +108,11 @@ const HomeScreen = (props) => {
           type="Compatibility"
           users={props.friendList}
           matches={props.allMatches}
+          gotoUserPage={
+            (username, spotifyId) => {
+              props.navigation.navigate('User', { username, spotifyId })
+            }
+          }
         />
       </Content>
     </Container>

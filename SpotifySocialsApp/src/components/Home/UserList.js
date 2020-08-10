@@ -5,7 +5,8 @@ import styled from "styled-components";
 const UserList = ({
   users,
   matches,
-  type
+  type,
+  gotoUserPage
 }) => {
   return (
     <View>
@@ -29,6 +30,9 @@ const UserList = ({
           return (
             <User
               key={i}
+              onPress={() => {
+                gotoUserPage(friend.username, friend.spotifyId)
+              }}
             >
               <FriendCard>
                 <FriendLeft>
