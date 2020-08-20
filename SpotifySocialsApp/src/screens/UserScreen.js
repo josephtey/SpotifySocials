@@ -9,6 +9,7 @@ import { FontAwesome, AntDesign } from '@expo/vector-icons'
 import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
 import MusicCard from '../components/User/MusicCard'
 import ProfileFeature from '../components/User/ProfileFeature'
+import MusicList from '../components/User/MusicList'
 
 
 const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getFriendList, getAllMatches }
@@ -52,18 +53,28 @@ const UserScreen = (props) => {
             {props.userProfile.username}
           </UserName>
         </Header>
+
         <SubHeader>
           <ProfileSummary>
             <ProfileFeature
               type="Genre"
               icon={<AntDesign name="heart" size={20} color="#171E31" />}
-              value={props.userMatch.genreDetails ? props.userMatch.genreDetails[0].genre : null}
+              value={
+                props.userMatch.genreDetails
+                  && props.userMatch.genreDetails.length > 0
+
+                  ? props.userMatch.genreDetails[0].genre
+                  : "None"}
             />
 
             <ProfileFeature
               type="Artist"
               icon={<AntDesign name="star" size={20} color="#171E31" />}
-              value={props.userMatch.artistDetails ? props.userMatch.artistDetails[0].name : null}
+              value={props.userMatch.artistDetails
+                && props.userMatch.artistDetails.length > 0
+
+                ? props.userMatch.artistDetails[0].name
+                : "None"}
             />
 
           </ProfileSummary>
@@ -94,26 +105,23 @@ const UserScreen = (props) => {
 
         <WhiteCardPanel>
           <PanelTitle>Genres</PanelTitle>
-          {props.userMatch.genreDetails ?
-
-            props.userMatch.genreDetails.length > 0 ?
-              props.userMatch.genreDetails.slice(0, 5).map((genre, i) => {
-                return (
-                  <Genre
-                    key={i}
-                  >
-                    <GenreTitle>{genre.genre}</GenreTitle>
-                    <GenreBar>
-                      <GenreBarInner
-                        progress={(genre.score / 80) >= 1 ? 1 : (genre.score / 80)}
-                      />
-                    </GenreBar>
-                  </Genre>
-                )
-              })
-              : <Typography>You have no genres in common with this user.</Typography>
-
-            : null}
+          <MusicList
+            data={props.userMatch.genreDetails}
+            type="genres"
+            maxNum={3}
+            item={(dataItem, index) => (
+              <Genre
+                key={index}
+              >
+                <GenreTitle>{dataItem.genre}</GenreTitle>
+                <GenreBar>
+                  <GenreBarInner
+                    progress={(dataItem.score / 80) >= 1 ? 1 : (dataItem.score / 80)}
+                  />
+                </GenreBar>
+              </Genre>
+            )}
+          />
         </WhiteCardPanel>
 
         <WhiteCardPanel>
@@ -124,15 +132,17 @@ const UserScreen = (props) => {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
           >
-            {props.userMatch.artistDetails && props.userMatch.artistDetails.map((artist, i) => {
-              return (
+            <MusicList
+              data={props.userMatch.artistDetails}
+              type="artists"
+              item={(dataItem, index) => (
                 <MusicCard
-                  id={artist.id}
-                  title={artist.name}
-                  key={i}
+                  id={dataItem.id}
+                  title={dataItem.name}
+                  key={index}
                 />
-              )
-            })}
+              )}
+            />
           </Artists>
         </WhiteCardPanel>
 
@@ -211,7 +221,7 @@ const AudioFeaturesIconBG = styled.View`
 const AudioFeaturesPanel = styled.View`
   background: #26304D;
   height: 350px;
-  margin: 55px 25px;
+  margin: 65px 25px 55px 25px;
   border-radius: 12px;
   box-shadow: 10px 10px 30px rgba(67, 86, 140, 0.93);
   justifyContent: center;

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { Text } from 'react-native'
 
 const Container = styled.View`
   flex-direction: row;
@@ -34,6 +33,7 @@ const FeatureValue = styled.Text`
   font-size: 20px;
   color: #171E31;
   font-family: TTCommons-Bold;  
+  text-transform: capitalize;
 `
 
 const ProfileFeature = ({
