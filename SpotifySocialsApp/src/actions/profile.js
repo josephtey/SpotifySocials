@@ -82,4 +82,10 @@ export const generateNewMatch = (currentUser, otherUser) => async dispatch => {
   }
 };
 
+export const RESET_USER_MATCH = 'RESET_USER_MATCH'
 
+export const resetUserMatch = () => {
+  return {
+    type: RESET_USER_MATCH
+  }
+}

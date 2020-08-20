@@ -10,7 +10,8 @@ import {
   NEW_MATCH_ERROR,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
-  GET_PROFILE_ERROR
+  GET_PROFILE_ERROR,
+  RESET_USER_MATCH
 } from '../actions/profile'
 
 const initialState = {
@@ -50,6 +51,8 @@ export default (state = initialState, action) => {
       return { ...state, isFetchingUserProfile: false, userProfile: action.userProfile }
     case GET_PROFILE_ERROR:
       return { ...state, isFetchingUserProfile: false, error: action.error }
+    case RESET_USER_MATCH:
+      return { ...state, userMatch: {}, userProfile: {} }
     default:
       return state
   }

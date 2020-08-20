@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
-import { ScrollView, SafeAreaView } from "react-native"
+import { ScrollView, Text } from "react-native"
 import { connect } from 'react-redux'
-import { getUserMatch, generateNewMatch, getProfile } from '../actions/profile'
-import { FontAwesome } from '@expo/vector-icons';
+import { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getAllMatches } from '../actions/profile'
+import { getFriendList } from '../actions/friends'
+import { FontAwesome, AntDesign } from '@expo/vector-icons'
+
 import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
+import MusicCard from '../components/User/MusicCard'
+import ProfileFeature from '../components/User/ProfileFeature'
 
 
-const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile }
+const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getFriendList, getAllMatches }
 
 const mapStateToProps = (state) => {
   return {
@@ -25,11 +29,19 @@ const UserScreen = (props) => {
   useEffect(() => {
     props.getUserMatch(props.userData.username, props.navigation.getParam('username'))
     props.getProfile(props.navigation.getParam('spotifyId'))
+
+    return () => {
+      props.resetUserMatch()
+      props.getFriendList(props.userData.username)
+      props.getAllMatches(props.userData.username)
+    }
   }, [])
 
   return (
     <Container>
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+      >
         <Header>
           <UserProfile
             source={{
@@ -42,6 +54,18 @@ const UserScreen = (props) => {
         </Header>
         <SubHeader>
           <ProfileSummary>
+            <ProfileFeature
+              type="Genre"
+              icon={<AntDesign name="heart" size={20} color="#171E31" />}
+              value={props.userMatch.genreDetails ? props.userMatch.genreDetails[0].genre : null}
+            />
+
+            <ProfileFeature
+              type="Artist"
+              icon={<AntDesign name="star" size={20} color="#171E31" />}
+              value={props.userMatch.artistDetails ? props.userMatch.artistDetails[0].name : null}
+            />
+
           </ProfileSummary>
 
           <Comparison>
@@ -67,12 +91,110 @@ const UserScreen = (props) => {
             : null}
 
         </AudioFeaturesPanel>
+
+        <WhiteCardPanel>
+          <PanelTitle>Genres</PanelTitle>
+          {props.userMatch.genreDetails ?
+
+            props.userMatch.genreDetails.length > 0 ?
+              props.userMatch.genreDetails.slice(0, 5).map((genre, i) => {
+                return (
+                  <Genre
+                    key={i}
+                  >
+                    <GenreTitle>{genre.genre}</GenreTitle>
+                    <GenreBar>
+                      <GenreBarInner
+                        progress={(genre.score / 80) >= 1 ? 1 : (genre.score / 80)}
+                      />
+                    </GenreBar>
+                  </Genre>
+                )
+              })
+              : <Typography>You have no genres in common with this user.</Typography>
+
+            : null}
+        </WhiteCardPanel>
+
+        <WhiteCardPanel>
+          <PanelTitle>
+            Artists
+          </PanelTitle>
+          <Artists
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            {props.userMatch.artistDetails && props.userMatch.artistDetails.map((artist, i) => {
+              return (
+                <MusicCard
+                  id={artist.id}
+                  title={artist.name}
+                  key={i}
+                />
+              )
+            })}
+          </Artists>
+        </WhiteCardPanel>
+
       </ScrollView>
     </Container>
   )
 
 
 }
+
+const Typography = styled.Text`
+  font-family: TTCommons-Medium;
+  color: grey;
+`
+const Artists = styled.ScrollView`
+  paddingBottom: 30px;
+  paddingTop: 15px;
+  paddingLeft: 20px;
+`
+
+const Genre = styled.View`
+  margin: 10px 0;
+`
+
+const GenreTitle = styled.Text`
+  font-family: TTCommons-Bold;
+  color: #26304D;
+  font-size: 20px;
+`
+
+const GenreBar = styled.View`
+  height: 18px;
+  width: 100%;
+  background: rgba(0,0,0, 0.03);
+  border-radius:3px;
+`
+
+const GenreBarInner = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 3px;
+  background: #2AC940;
+  height:18px;
+  width: ${props => props.progress * 100}%
+`
+
+const PanelTitle = styled.Text`
+  font-size: 20px;
+  font-family: TTCommons-Bold;
+  color: #D9D9D9;
+  text-align: left;
+`
+
+const WhiteCardPanel = styled.View`
+  background: #ffffff;
+  margin: 0 25px 55px 25px;
+  border-radius: 12px;
+  box-shadow: 10px 10px 20px rgba(0,0,0, 0.1);
+  padding: 25px;
+`
+
 const AudioFeaturesIconWrapper = styled.View`
   position: absolute;
   left: 52px;
@@ -89,7 +211,7 @@ const AudioFeaturesIconBG = styled.View`
 const AudioFeaturesPanel = styled.View`
   background: #26304D;
   height: 350px;
-  margin: 55px 15px;
+  margin: 55px 25px;
   border-radius: 12px;
   box-shadow: 10px 10px 30px rgba(67, 86, 140, 0.93);
   justifyContent: center;
@@ -130,7 +252,7 @@ const ProfileSummary = styled.View`
   border-radius: 12px;
   background: white;
   height: 130px;
-  width: 55%;
+  width: 50%;
   margin-right:10px;
   z-index: 10
 `
@@ -157,8 +279,6 @@ const Header = styled.View`
   justifyContent: center;
   alignItems: center;
 `
-
-
 
 const Container = styled.View`
   flex: 1;

@@ -12,6 +12,12 @@ export const getProfileInfo = async () => {
   return profileInfo
 }
 
+export const getArtistInfo = async (artistId) => {
+  const artistInfo = await sp.getArtist(artistId)
+
+  return artistInfo
+}
+
 export const getTopArtists = async (timeframe) => {
   const topArtists = await sp.getMyTopArtists({ limit: 50, 'time_range': timeframe })
   return topArtists.items
