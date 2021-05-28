@@ -6,7 +6,8 @@ const UserList = ({
   users,
   matches,
   type,
-  gotoUserPage
+  gotoUserPage,
+  currentUser
 }) => {
   return (
     <View>
@@ -25,6 +26,10 @@ const UserList = ({
             latestUserMatch = userMatches.sort(function (a, b) {
               return b.dateMatched - a.dateMatched
             })[0]
+          }
+
+          if (friend.username === currentUser.username) {
+            return null
           }
 
           return (

@@ -44,6 +44,7 @@ const LoginScreen = (props) => {
 
     return (
         <Container>
+            <BlueBackdrop />
             <AnimatedTitle
                 style={{ top, opacity }}
             >
@@ -56,7 +57,7 @@ const LoginScreen = (props) => {
             >
 
                 <AnimatedIconWrapper style={{ opacity }}>
-                    <Feather name="key" size={24} color="#f6527c" />
+                    <Feather name="key" size={24} color="grey" />
                 </AnimatedIconWrapper>
 
                 <AnimatedLoginText
@@ -80,12 +81,12 @@ const Container = styled.View`
     alignItems: center;
     justifyContent: center;
     flex: 1;
-    background: #171E31;
+    background: white;
 `;
 
 const LoginText = styled.Text`
     font-family: TTCommons-Regular;    
-    color: rgba(255, 255, 255, 0.5);
+    color: grey;
     font-size: 20px;
 `
 
@@ -98,7 +99,17 @@ const Title = styled.Text`
 
 const LoginTextWrapper = styled.TouchableOpacity`
     position: absolute;
-    bottom: 240px
+    bottom: 8%;
+`
+
+const BlueBackdrop = styled.View`
+    background: #171E31;
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    top: 0;
+    border-bottom-right-radius: 150px;
+    border-bottom-left-radius: 150px;
 `
 
 const AnimatedLoginText = Animated.createAnimatedComponent(LoginText)

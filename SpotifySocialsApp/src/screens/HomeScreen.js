@@ -39,7 +39,8 @@ const HomeScreen = (props) => {
             onPress={() => {
               props.navigation.navigate('User', {
                 username: props.userData.username,
-                spotifyId: props.userData.spotifyId
+                spotifyId: props.userData.spotifyId,
+                currentUserProfile: true
               })
             }}>
 
@@ -70,7 +71,7 @@ const HomeScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         >
           <HeaderCard
-            title={"Indie Pop"}
+            title={"None"}
             caption={"Top Genre"}
           />
 
@@ -114,9 +115,10 @@ const HomeScreen = (props) => {
           matches={props.allMatches}
           gotoUserPage={
             (username, spotifyId) => {
-              props.navigation.navigate('User', { username, spotifyId })
+              props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
             }
           }
+          currentUser={props.userData}
         />
       </Content>
     </Container>

@@ -55,7 +55,9 @@ const UserScreen = (props) => {
         </Header>
 
         <SubHeader>
-          <ProfileSummary>
+          <ProfileSummary
+            fullWidth={props.navigation.getParam('currentUserProfile')}
+          >
             <ProfileFeature
               type="Genre"
               icon={<AntDesign name="heart" size={20} color="#171E31" />}
@@ -79,7 +81,9 @@ const UserScreen = (props) => {
 
           </ProfileSummary>
 
-          <Comparison>
+          <Comparison
+            visible={!props.navigation.getParam('currentUserProfile')}
+          >
             <ComparisonPercentage>
               {Math.round(props.userMatch.overallScore)}%
           </ComparisonPercentage>
@@ -241,13 +245,14 @@ const Comparison = styled.View`
   box-shadow: 0 4px 40px rgba(42,201,64,0.4);
   width: 35%;
   justifyContent: center;
-  alignItems: center
+  alignItems: center;
+  display: ${props => props.visible ? 'flex' : 'none'};
 `
 
 const ComparisonPercentage = styled.Text`
   color: white;
   font-size: 40px;
-  margin-top: 10px;
+  margin: 10px 0;
   font-family: TTCommons-DemiBold;
 `
 
@@ -262,7 +267,7 @@ const ProfileSummary = styled.View`
   border-radius: 12px;
   background: white;
   height: 130px;
-  width: 50%;
+  width: ${props => props.fullWidth ? '87%' : '50%'};
   margin-right:10px;
   z-index: 10
 `
