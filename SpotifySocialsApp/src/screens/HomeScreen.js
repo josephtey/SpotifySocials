@@ -37,6 +37,10 @@ const HomeScreen = (props) => {
         <TopBar>
           <TouchableOpacity
             onPress={() => {
+              props.navigation.navigate('User', {
+                username: props.userData.username,
+                spotifyId: props.userData.spotifyId
+              })
             }}>
 
             <CurrentUser>
