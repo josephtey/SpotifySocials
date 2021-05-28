@@ -64,6 +64,8 @@ export const getAllUserMatches = async (currentUser) => {
         currentUser
     })
 
+    console.log(response)
+
     return response.data
 }
 

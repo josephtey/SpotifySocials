@@ -3,7 +3,8 @@ import { Provider, connect } from 'react-redux';
 import store from './store'
 import AppNavigator from './src/navigator/AppNavigator'
 import * as font from 'expo-font';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
+import { ScrollView, Text } from "react-native"
 
 const fetchFonts = () => {
   return font.loadAsync({
@@ -23,12 +24,15 @@ const AppNav = (props) => {
       <AppLoading
         startAsync={fetchFonts}
         onFinish={() => setLoading(false)}
+        onError={console.warn}
       />
     )
+  } else {
+    return (
+      <AppNavigator />
+    );
   }
-  return (
-    <AppNavigator />
-  );
+
 
 }
 
