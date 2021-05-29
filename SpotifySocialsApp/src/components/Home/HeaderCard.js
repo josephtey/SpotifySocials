@@ -23,6 +23,7 @@ const Title = styled.Text`
   font-family: TTCommons-Bold;
   font-size: 23px;
   color: white;
+  text-transform: capitalize;
 `
 
 const Caption = styled.Text`

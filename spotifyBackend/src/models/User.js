@@ -47,6 +47,14 @@ const userSchema = new mongoose.Schema({
     allTimeAudioFeatures: {
         type: Map,
         required: true
+    },
+    recentObscurifyPercentile: {
+        type: Number,
+        required: false
+    },
+    allTimeObscurifyPercentile: {
+        type: Number,
+        required: false
     }
 })
 

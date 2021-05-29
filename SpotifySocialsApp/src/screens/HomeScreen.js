@@ -19,7 +19,6 @@ const mapStateToProps = (state) => {
   }
 }
 
-
 const HomeScreen = (props) => {
 
   useEffect(() => {
@@ -71,7 +70,7 @@ const HomeScreen = (props) => {
           showsHorizontalScrollIndicator={false}
         >
           <HeaderCard
-            title={"None"}
+            title={Object.keys(props.userData.currentTopGenres).reduce(function (a, b) { return props.userData.currentTopGenres[a] > props.userData.currentTopGenres[b] ? a : b })}
             caption={"Top Genre"}
           />
 

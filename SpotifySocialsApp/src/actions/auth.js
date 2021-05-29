@@ -1,5 +1,6 @@
 import { initialiseUser, checkIfUserExists, getUser } from '../api/db';
 import { initSpotify, getProfileInfo, getTopArtists, getTopGenres, getTopTracks, getAudioFeatures } from '../api/spotify'
+import { getObscurifyPercentile } from '../api/obscurify'
 import { getTokens } from '../api/spotifyAuth'
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
@@ -41,19 +42,36 @@ const generateProfileRequest = { type: GENERATE_PROFILE_REQUEST };
 const generateProfileSuccess = (userData, redirect) => ({ type: GENERATE_PROFILE_SUCCESS, userData, redirect });
 const generateProfileError = error => ({ type: GENERATE_PROFILE_ERROR, error });
 
+const calculateObscurifyScore = (artists) => {
+  let score = 0;
+  artists.map((artist, i) => {
+    score = score + (50 / artists.length) *
+      Math.floor(artist.popularity * (1 - i / artists.length));
+  })
+  score = Math.floor(score / 10);
+
+  return score
+}
+
 export const generateProfile = (username, spotifyProfile) => async dispatch => {
   dispatch(generateProfileRequest);
   try {
     // Generate Spotify Data to Initialise User
     const currentTopArtists = await getTopArtists('short_term')
+    const recentObscurifyScore = calculateObscurifyScore(currentTopArtists)
+
     const currentTopTracks = await getTopTracks('short_term')
     const currentTopGenres = getTopGenres(currentTopArtists)
     const currentAudioFeatures = await getAudioFeatures(currentTopTracks)
 
     const allTimeTopArtists = await getTopArtists('long_term')
+    const allTimeObscurifyScore = calculateObscurifyScore(allTimeTopArtists)
+
     const allTimeTopTracks = await getTopTracks('long_term')
     const allTimeTopGenres = getTopGenres(allTimeTopArtists)
     const allTimeAudioFeatures = await getAudioFeatures(allTimeTopTracks)
+
+    const obscurifyPercentiles = await getObscurifyPercentile(recentObscurifyScore, allTimeObscurifyScore)
 
     const userData = {
       displayName: spotifyProfile.display_name,
@@ -66,7 +84,8 @@ export const generateProfile = (username, spotifyProfile) => async dispatch => {
       allTimeTopArtists,
       allTimeTopTracks,
       allTimeTopGenres,
-      allTimeAudioFeatures
+      allTimeAudioFeatures,
+      ...obscurifyPercentiles
     }
 
 

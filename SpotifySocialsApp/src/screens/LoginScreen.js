@@ -108,8 +108,8 @@ const BlueBackdrop = styled.View`
     height: 80%;
     position: absolute;
     top: 0;
-    border-bottom-right-radius: 150px;
-    border-bottom-left-radius: 150px;
+    border-bottom-right-radius: 200px;
+    border-bottom-left-radius: 200px;
 `
 
 const AnimatedLoginText = Animated.createAnimatedComponent(LoginText)
