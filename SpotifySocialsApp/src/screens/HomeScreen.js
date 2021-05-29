@@ -19,17 +19,51 @@ const mapStateToProps = (state) => {
   }
 }
 
+const sortUserList = (users, matches, currentUser) => {
+  friends = []
+  users.map((friend) => {
+
+    const userMatches = matches.filter(item => item.otherUser === friend.username)
+
+    let latestUserMatch = null
+    if (userMatches.length > 0) {
+      latestUserMatch = userMatches.sort(function (a, b) {
+        return b.dateMatched - a.dateMatched
+      })[0]
+    }
+
+    if (friend.username !== currentUser.username) {
+      friends.push({
+        overallScore: 0,
+        ...friend,
+        ...latestUserMatch
+      })
+    }
+  })
+
+  friends.sort((a, b) => (a.overallScore < b.overallScore) ? 1 : -1)
+
+  return friends
+
+}
+
 const HomeScreen = (props) => {
 
+  const [sortedUsers, setSortedUsers] = useState(null)
+
   useEffect(() => {
-    props.getFriendList(props.userData.username)
     props.getAllMatches(props.userData.username)
+    props.getFriendList(props.userData.username)
+
   }, [])
 
-  // useEffect(() => {
-  //   console.log(props.allMatches)
-  // }, [props])
+  useEffect(() => {
+    if (props.friendList) {
+      setSortedUsers(sortUserList(props.friendList, props.allMatches, props.userData))
+    }
+  }, [props.friendList])
 
+  if (!sortedUsers) return null
   return (
     <Container>
       <Header>
@@ -75,8 +109,8 @@ const HomeScreen = (props) => {
           />
 
           <HeaderCard
-            title={"Indie Pop"}
-            caption={"Top Genre"}
+            title={props.userData.recentObscurifyPercentile.toString() + "%"}
+            caption={"Obscurity Score"}
           />
 
           <HeaderCard
@@ -110,8 +144,7 @@ const HomeScreen = (props) => {
       <Content>
         <UserList
           type="Compatibility"
-          users={props.friendList}
-          matches={props.allMatches}
+          sortedUsers={sortedUsers}
           gotoUserPage={
             (username, spotifyId) => {
               props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })

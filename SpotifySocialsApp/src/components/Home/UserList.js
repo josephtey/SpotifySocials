@@ -3,12 +3,12 @@ import { TouchableOpacity, View, ScrollView, Text } from 'react-native'
 import styled from "styled-components";
 
 const UserList = ({
-  users,
-  matches,
+  sortedUsers,
   type,
   gotoUserPage,
   currentUser
 }) => {
+
   return (
     <View>
       <ContentTitle>
@@ -18,20 +18,7 @@ const UserList = ({
         showsVerticalScrollIndicator={false}
       >
 
-        {users.map((friend, i) => {
-
-          const userMatches = matches.filter(item => item.otherUser === friend.username)
-          let latestUserMatch = null
-          if (userMatches.length > 0) {
-            latestUserMatch = userMatches.sort(function (a, b) {
-              return b.dateMatched - a.dateMatched
-            })[0]
-          }
-
-          if (friend.username === currentUser.username) {
-            return null
-          }
-
+        {sortedUsers.map((friend, i) => {
           return (
             <User
               key={i}
@@ -40,6 +27,17 @@ const UserList = ({
               }}
             >
               <FriendCard>
+
+                {i < 3 ?
+                  <FriendBadge
+                    place={i + 1}
+                  >
+                    <FriendStats>
+                      {i + 1}
+                    </FriendStats>
+                  </FriendBadge>
+                  : null
+                }
                 <FriendLeft>
                   <FriendMain>
                     {friend.displayName}
@@ -48,16 +46,18 @@ const UserList = ({
                     @{friend.username}
                   </FriendCaption>
                 </FriendLeft>
-                {latestUserMatch ?
-                  <FriendRight>
+                {friend.overallScore ?
+                  <FriendRight
+                    place={i}
+                  >
                     <FriendStats>
-                      {Math.round(latestUserMatch.overallScore)}%
+                      {Math.round(friend.overallScore)}%
                   </FriendStats>
                   </FriendRight>
                   : null}
               </FriendCard>
               <ProgressLine
-                progress={latestUserMatch ? latestUserMatch.overallScore : 0}
+                progress={friend.overallScore}
               />
             </User>
           )
@@ -85,8 +85,19 @@ padding: 15px 20px;
 flex: 4;
 position: relative;
 `
+
+const FriendBadge = styled.View`
+  flex: 0.5;
+  background: ${props => props.place === 1 ? '#fad001' : props.place === 2 ? '#cecece' : '#a34c20'};
+  height: 100%;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  justify-content: center;
+  align-items: center;
+`
+
 const FriendRight = styled.View`
-flex: 1;
+flex: ${props => props.place < 3 ? '1.12' : '1'};
 background: #2ac940;
 height: 100%;
 border-top-right-radius: 5px;

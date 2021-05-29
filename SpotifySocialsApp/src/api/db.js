@@ -6,7 +6,6 @@ const db = axios.create({
 
 // Users
 export const initialiseUser = async (userData) => {
-    console.log(userData)
     const response = await db.post('/initialiseUser', userData)
 
     return response.data

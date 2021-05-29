@@ -85,7 +85,8 @@ export const generateProfile = (username, spotifyProfile) => async dispatch => {
       allTimeTopTracks,
       allTimeTopGenres,
       allTimeAudioFeatures,
-      ...obscurifyPercentiles
+      recentObscurifyPercentile: obscurifyPercentiles.recentObscurifyPercentile,
+      allTimeObscurifyPercentile: obscurifyPercentiles.allTimeObscurifyPercentile
     }
 
 
