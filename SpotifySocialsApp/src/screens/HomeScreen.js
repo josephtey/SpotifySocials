@@ -115,12 +115,7 @@ const HomeScreen = (props) => {
 
           <HeaderCard
             title={"Indie Pop"}
-            caption={"Top Genre"}
-          />
-
-          <HeaderCard
-            title={"Indie Pop"}
-            caption={"Top Genre"}
+            caption={"Happiness"}
           />
 
         </HeaderCards>
