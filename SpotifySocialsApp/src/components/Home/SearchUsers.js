@@ -4,14 +4,20 @@ import styled from "styled-components";
 import { searchUsers } from './../../api/db'
 import UserList from './UserList'
 
-const SearchUsers = () => {
+const SearchUsers = ({
+  currentFriends,
+  sentFriendRequests,
+  addFriend,
+  currentUser
+}) => {
 
   const [searchValue, setSearchValue] = useState("")
   const [searchResults, setSearchResults] = useState([])
 
   useEffect(() => {
     const search = async () => {
-      setSearchResults(await searchUsers(""))
+      const searchedUsers = await searchUsers("")
+      setSearchResults(searchedUsers.filter(user => user.username !== currentUser.username))
     }
 
     search()
@@ -36,10 +42,27 @@ const SearchUsers = () => {
       />
 
       <UserList
-        sortedUsers={searchResults}
+        sortedUsers={searchResults.map((user) => {
+          if (currentFriends.find(friend => friend.username === user.username)) {
+            return {
+              ...user,
+              status: 'friends'
+            }
+          } else if (sentFriendRequests.find(friend => friend.otherUser === user.username)) {
+            return {
+              ...user,
+              status: 'pending'
+            }
+          } else {
+            return {
+              ...user,
+              status: 'not friends'
+            }
+          }
+        })}
         gotoUserPage={
-          (username, spotifyId) => {
-
+          async (username, spotifyId) => {
+            await addFriend(username)
           }}
         search={true}
       />

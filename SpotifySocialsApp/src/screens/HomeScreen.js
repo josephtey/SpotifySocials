@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react'
 import { TouchableOpacity, Animated, useWindowDimensions, StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
-import { Feather, MaterialIcons } from '@expo/vector-icons';
-import { getFriendList } from '../actions/friends'
+import { Feather, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { getFriendList, getRequestedFriends, addNewFriend } from '../actions/friends'
 import { getAllMatches } from '../actions/profile'
 import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
 import SearchUsers from '../components/Home/SearchUsers'
 
-const mapDispatchToProps = { getFriendList, getAllMatches }
+const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend }
 
 const mapStateToProps = (state) => {
   return {
@@ -98,6 +98,7 @@ const HomeScreen = (props) => {
   useEffect(() => {
     props.getAllMatches(props.userData.username)
     props.getFriendList(props.userData.username)
+    props.getRequestedFriends(props.userData.username)
   }, [])
 
   useEffect(() => {
@@ -118,25 +119,30 @@ const HomeScreen = (props) => {
     <Container>
       <Header>
         <TopBar>
-          <TouchableOpacity
-            onPress={() => {
-              props.navigation.navigate('User', {
-                username: props.userData.username,
-                spotifyId: props.userData.spotifyId,
-                currentUserProfile: true
-              })
-            }}>
 
-            <CurrentUser>
+
+          <CurrentUser>
+            <TouchableOpacity
+              onPress={() => {
+                props.navigation.navigate('User', {
+                  username: props.userData.username,
+                  spotifyId: props.userData.spotifyId,
+                  currentUserProfile: true
+                })
+              }}>
               <UserInfo>
                 <UserName>
                   {props.spotifyProfile.display_name}
                 </UserName>
                 <UserCaption>
-                  "Without music, life would be a mistake"
-              </UserCaption>
+                  @{props.userData.username}
+                </UserCaption>
               </UserInfo>
 
+            </TouchableOpacity>
+
+            <UserRight>
+              <AntDesign name="bells" size={24} color="white" />
               <UserIcon
                 source={{
                   uri: props.spotifyProfile.images.length > 0 ?
@@ -144,8 +150,8 @@ const HomeScreen = (props) => {
                     "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
                 }}
               />
-            </CurrentUser>
-          </TouchableOpacity>
+            </UserRight>
+          </CurrentUser>
 
 
         </TopBar>
@@ -231,7 +237,14 @@ const HomeScreen = (props) => {
                     key={pageIndex}
                   >
 
-                    <SearchUsers />
+                    <SearchUsers
+                      currentFriends={props.friendList}
+                      sentFriendRequests={props.sentFriendRequests}
+                      addFriend={async (userToAdd) => {
+                        props.addNewFriend(props.userData.username, userToAdd)
+                      }}
+                      currentUser={props.userData}
+                    />
                   </View>
                 )
               }
@@ -268,7 +281,12 @@ const HomeScreen = (props) => {
   )
 }
 
-
+const UserRight = styled.View`
+  display: flex;
+  justify-content: center;
+  alignItems: center;
+  flex-direction: row;
+`
 const NavIcon = styled.TouchableOpacity`
   width: 25%;
   height: 90%;
@@ -327,6 +345,7 @@ const UserIcon = styled.Image`
 width: 40px; 
 height: 40px;
 border-radius: 17px
+marginLeft: 20px;
 `
 
 const UserInfo = styled.View`

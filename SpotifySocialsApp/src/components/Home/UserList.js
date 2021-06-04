@@ -63,6 +63,32 @@ const UserList = ({
                   </FriendStats>
                   </FriendRight>
                   : null}
+
+                {search ?
+                  <>
+                    {
+                      friend.status === 'friends' ?
+                        null
+                        : friend.status === 'not friends' ?
+                          <FriendRight>
+                            <FriendStats>
+                              Add
+                          </FriendStats>
+                          </FriendRight>
+                          : friend.status === 'pending' ?
+                            <FriendRight
+                              disabled={true}
+                            >
+                              <FriendStats>
+                                Sent
+                           </FriendStats>
+                            </FriendRight>
+                            : null
+                    }
+
+                  </>
+                  : null}
+
               </FriendCard>
               <ProgressLine
                 progress={friend[metric]}
@@ -80,6 +106,7 @@ export default UserList
 const Container = styled.View`
   padding: ${props => props.padding ? '10px 20px' : 0};
   height: 100%;
+  paddingBottom: 70px;
 `
 
 const User = styled.TouchableOpacity`
@@ -111,7 +138,7 @@ const FriendBadge = styled.View`
 
 const FriendRight = styled.View`
 flex: ${props => props.place < 3 ? '1.12' : '1'};
-background: #2ac940;
+background: ${props => props.disabled ? '#b7b7b7' : '#2ac940'};
 height: 100%;
 border-top-right-radius: 5px;
 border-bottom-right-radius: 5px;

@@ -37,6 +37,11 @@ export const getFriends = async (currentUser) => {
     return response.data
 };
 
+export const getSentFriendRequests = async (currentUser) => {
+    const response = await db.post('/getSentFriendRequests', { currentUser })
+    return response.data
+};
+
 export const getFriendRequests = async (otherUser) => {
     const response = await db.post('/getFriendRequests', { otherUser })
     return response.data

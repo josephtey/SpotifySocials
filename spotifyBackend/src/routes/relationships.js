@@ -95,6 +95,19 @@ router.post('/getFriendRequests', async (req, res) => {
         }
     })
 })
+router.post('/getSentFriendRequests', async (req, res) => {
+
+    // Other user is the user who receives the friend request
+    const { currentUser } = req.body
+
+    Relationship.find({ type: 'pending', currentUser }, function (err, requests) {
+        if (err) {
+            res.send(err)
+        } else {
+            res.send(requests)
+        }
+    })
+})
 
 
 
