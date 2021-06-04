@@ -61,7 +61,7 @@ export default (state = initialState, action) => {
     case RESPOND_TO_REQUEST_REQUEST:
       return { ...state, isRespondingToRequest: true }
     case RESPOND_TO_REQUEST_SUCCESS:
-      return { ...state, isRespondingToRequest: false, friendRequests: action.friendRequests }
+      return { ...state, isRespondingToRequest: false, friendRequests: action.friendRequests, friendList: action.friendList }
     case RESPOND_TO_REQUEST_ERROR:
       return { ...state, isRespondingToRequest: false, error: action.error }
     default:

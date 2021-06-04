@@ -83,7 +83,7 @@ export const RESPOND_TO_REQUEST_SUCCESS = 'RESPOND_TO_REQUEST_SUCCESS';
 export const RESPOND_TO_REQUEST_ERROR = 'RESPOND_TO_REQUEST_ERROR';
 
 const respondToRequestRequest = { type: RESPOND_TO_REQUEST_REQUEST };
-const respondToRequestSuccess = (friendRequests) => ({ type: RESPOND_TO_REQUEST_SUCCESS, friendRequests });
+const respondToRequestSuccess = (friendRequests, friendList) => ({ type: RESPOND_TO_REQUEST_SUCCESS, friendRequests, friendList });
 const respondToRequestError = error => ({ type: RESPOND_TO_REQUEST_ERROR, error });
 
 export const respondToRequest = (type, currentUser, userThatAddedMe) => async dispatch => {
@@ -97,8 +97,9 @@ export const respondToRequest = (type, currentUser, userThatAddedMe) => async di
       response = await rejectFriendRequest(userThatAddedMe, currentUser)
     }
 
+    const friendList = await getFriends(currentUser)
     const friendRequests = await getFriendRequests(currentUser)
-    dispatch(respondToRequestSuccess(friendRequests))
+    dispatch(respondToRequestSuccess(friendRequests, friendList))
 
   } catch (error) {
     dispatch(respondToRequestError(error));
