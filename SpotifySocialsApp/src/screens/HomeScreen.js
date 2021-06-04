@@ -73,6 +73,7 @@ const HomeScreen = (props) => {
 
   // Page Scrolling
   const scrollX = useRef(new Animated.Value(0)).current;
+  const scroll = useRef()
   const { width: windowWidth } = useWindowDimensions();
   const pages = [
     {
@@ -181,12 +182,12 @@ const HomeScreen = (props) => {
 
       <Navigation>
         <IndicatorContainer>
-          {[1, 2, 3, 4].map((image, imageIndex) => {
+          {pages.map((page, pageIndex) => {
             const width = scrollX.interpolate({
               inputRange: [
-                windowWidth * (imageIndex - 1),
-                windowWidth * imageIndex,
-                windowWidth * (imageIndex + 1)
+                windowWidth * (pageIndex - 1),
+                windowWidth * pageIndex,
+                windowWidth * (pageIndex + 1)
               ],
               outputRange: [0, 52, 0],
               extrapolate: "clamp"
@@ -194,31 +195,47 @@ const HomeScreen = (props) => {
 
             const opacity = scrollX.interpolate({
               inputRange: [
-                windowWidth * (imageIndex - 1),
-                windowWidth * imageIndex,
-                windowWidth * (imageIndex + 1)
+                windowWidth * (pageIndex - 1),
+                windowWidth * pageIndex,
+                windowWidth * (pageIndex + 1)
               ],
               outputRange: [0, 0.1, 0],
               extrapolate: "clamp"
             });
             return (
               <Animated.View
-                key={imageIndex}
+                key={pageIndex}
                 style={[styles.normalDot, { width, opacity }]}
               />
             );
           })}
         </IndicatorContainer>
-        <NavIcon>
+        <NavIcon
+          onPress={() => {
+            scroll.current.scrollTo({ x: 0 })
+          }}
+        >
           <Feather name="users" size={24} color="white" />
         </NavIcon>
-        <NavIcon>
-          <MaterialIcons name="library-music" size={24} color="white" />
-        </NavIcon>
-        <NavIcon>
+        <NavIcon
+          onPress={() => {
+            scroll.current.scrollTo({ x: windowWidth })
+          }}
+        >
           <Feather name="smile" size={24} color="white" />
         </NavIcon>
-        <NavIcon>
+        <NavIcon
+          onPress={() => {
+            scroll.current.scrollTo({ x: windowWidth * 2 })
+          }}
+        >
+          <MaterialIcons name="library-music" size={24} color="white" />
+        </NavIcon>
+        <NavIcon
+          onPress={() => {
+            scroll.current.scrollTo({ x: windowWidth * 3 })
+          }}
+        >
           <Feather name="search" size={24} color="white" />
         </NavIcon>
       </Navigation>
@@ -239,6 +256,7 @@ const HomeScreen = (props) => {
               }
             ])}
             scrollEventThrottle={1}
+            ref={scroll}
           >
             {pages.map((page, pageIndex) => {
               if (page.title !== "Search") {
