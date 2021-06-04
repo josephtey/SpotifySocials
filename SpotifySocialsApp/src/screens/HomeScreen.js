@@ -7,6 +7,7 @@ import { getFriendList } from '../actions/friends'
 import { getAllMatches } from '../actions/profile'
 import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
+import SearchUsers from '../components/Home/SearchUsers'
 
 const mapDispatchToProps = { getFriendList, getAllMatches }
 
@@ -88,6 +89,9 @@ const HomeScreen = (props) => {
       title: 'Obscurity',
       users: sortedObscurityUsers,
       metric: 'recentObscurifyPercentile'
+    },
+    {
+      title: 'Search'
     }
   ]
 
@@ -202,23 +206,36 @@ const HomeScreen = (props) => {
             scrollEventThrottle={1}
           >
             {pages.map((page, pageIndex) => {
-              return (
-                <View
-                  style={{ width: windowWidth }}
-                  key={pageIndex}
-                >
-                  <UserList
-                    type={page.title}
-                    sortedUsers={page.users}
-                    gotoUserPage={
-                      (username, spotifyId) => {
-                        props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
+              if (page.title !== "Search") {
+                return (
+                  <View
+                    style={{ width: windowWidth }}
+                    key={pageIndex}
+                  >
+                    <UserList
+                      type={page.title}
+                      sortedUsers={page.users}
+                      gotoUserPage={
+                        (username, spotifyId) => {
+                          props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
+                        }
                       }
-                    }
-                    metric={page.metric}
-                  />
-                </View>
-              );
+                      metric={page.metric}
+                    />
+                  </View>
+                );
+              } else {
+                return (
+                  <View
+                    style={{ width: windowWidth }}
+                    key={pageIndex}
+                  >
+
+                    <SearchUsers />
+                  </View>
+                )
+              }
+
             })}
           </MainScrollView>
 

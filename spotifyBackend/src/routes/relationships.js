@@ -14,9 +14,9 @@ router.post('/getFriends', async (req, res) => {
 
             for (let i = 0; i < users.length; i++) {
                 if (users[i].currentUser === currentUser) {
-                    user = await User.findOne({ username: users[i].otherUser }, 'username spotifyId displayName')
+                    user = await User.findOne({ username: users[i].otherUser }, 'spotifyId username displayName recentObscurifyPercentile currentAudioFeatures')
                 } else {
-                    user = await User.findOne({ username: users[i].currentUser }, 'username spotifyId displayName')
+                    user = await User.findOne({ username: users[i].currentUser }, 'spotifyId username displayName recentObscurifyPercentile currentAudioFeatures')
                 }
 
                 if (!user) {

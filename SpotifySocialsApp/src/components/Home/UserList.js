@@ -71,6 +71,7 @@ export default UserList
 
 const Container = styled.View`
   padding: 10px 20px;
+  height: 100%;
 `
 
 const User = styled.TouchableOpacity`

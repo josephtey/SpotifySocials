@@ -53,7 +53,7 @@ export const rejectFriendRequest = async (currentUser, otherUser) => {
 };
 
 export const addFriend = async (currentUser, otherUser) => {
-    const response = await db.post('/addFrend', { currentUser, otherUser })
+    const response = await db.post('/addFriend', { currentUser, otherUser })
     return response.data
 };
 

@@ -11,7 +11,7 @@ const getFriendsError = error => ({ type: GET_FRIENDS_ERROR, error });
 export const getFriendList = (username) => async dispatch => {
   dispatch(getFriendsRequest);
   try {
-    const friendList = await searchUsers("")
+    const friendList = await getFriends(username)
     dispatch(getFriendsSuccess(friendList))
 
   } catch (error) {
