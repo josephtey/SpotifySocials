@@ -143,7 +143,13 @@ const HomeScreen = (props) => {
             </TouchableOpacity>
 
             <UserRight>
-              <AntDesign name="bells" size={24} color="white" />
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate('Notifications')
+                }}
+              >
+                <AntDesign name="bells" size={24} color="white" />
+              </TouchableOpacity>
               <UserIcon
                 source={{
                   uri: props.spotifyProfile.images.length > 0 ?

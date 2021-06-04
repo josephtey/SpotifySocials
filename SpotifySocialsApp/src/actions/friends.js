@@ -1,4 +1,4 @@
-import { getFriends, getSentFriendRequests, addFriend } from '../api/db';
+import { getFriends, getSentFriendRequests, addFriend, getFriendRequests, acceptFriendRequest, rejectFriendRequest } from '../api/db';
 
 export const GET_FRIENDS_REQUEST = 'GET_FRIENDS_REQUEST';
 export const GET_FRIENDS_SUCCESS = 'GET_FRIENDS_SUCCESS';
@@ -52,10 +52,55 @@ export const addNewFriend = (currentUser, userToAdd) => async dispatch => {
     const addFriendResponse = await addFriend(currentUser, userToAdd)
     const sentFriendRequests = await getSentFriendRequests(currentUser)
 
-    console.log("added " + userToAdd, addFriendResponse)
     dispatch(addFriendSuccess(sentFriendRequests))
 
   } catch (error) {
     dispatch(addFriendError(error));
+  }
+};
+
+export const GET_FRIEND_REQUESTS_REQUEST = 'GET_FRIEND_REQUESTS_REQUEST';
+export const GET_FRIEND_REQUESTS_SUCCESS = 'GET_FRIEND_REQUESTS_SUCCESS';
+export const GET_FRIEND_REQUESTS_ERROR = 'GET_FRIEND_REQUESTS_ERROR';
+
+const getFriendRequestsRequest = { type: GET_FRIEND_REQUESTS_REQUEST };
+const getFriendRequestsSuccess = (friendRequests) => ({ type: GET_FRIEND_REQUESTS_SUCCESS, friendRequests });
+const getFriendRequestsError = error => ({ type: GET_FRIEND_REQUESTS_ERROR, error });
+
+export const getAllFriendRequests = (currentUser) => async dispatch => {
+  dispatch(getFriendRequestsRequest);
+  try {
+    const friendRequests = await getFriendRequests(currentUser)
+    dispatch(getFriendRequestsSuccess(friendRequests))
+
+  } catch (error) {
+    dispatch(getFriendRequestsError(error));
+  }
+};
+
+export const RESPOND_TO_REQUEST_REQUEST = 'RESPOND_TO_REQUEST_REQUEST';
+export const RESPOND_TO_REQUEST_SUCCESS = 'RESPOND_TO_REQUEST_SUCCESS';
+export const RESPOND_TO_REQUEST_ERROR = 'RESPOND_TO_REQUEST_ERROR';
+
+const respondToRequestRequest = { type: RESPOND_TO_REQUEST_REQUEST };
+const respondToRequestSuccess = (friendRequests) => ({ type: RESPOND_TO_REQUEST_SUCCESS, friendRequests });
+const respondToRequestError = error => ({ type: RESPOND_TO_REQUEST_ERROR, error });
+
+export const respondToRequest = (type, currentUser, userThatAddedMe) => async dispatch => {
+  dispatch(respondToRequestRequest);
+  try {
+
+    let response;
+    if (type === "accept") {
+      response = await acceptFriendRequest(userThatAddedMe, currentUser)
+    } else if (type === "reject") {
+      response = await rejectFriendRequest(userThatAddedMe, currentUser)
+    }
+
+    const friendRequests = await getFriendRequests(currentUser)
+    dispatch(respondToRequestSuccess(friendRequests))
+
+  } catch (error) {
+    dispatch(respondToRequestError(error));
   }
 };
