@@ -1,10 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { TouchableOpacity, View, ScrollView, Text } from 'react-native'
 import styled from "styled-components";
+import { searchUsers } from './../../api/db'
+import UserList from './UserList'
 
 const SearchUsers = () => {
 
   const [searchValue, setSearchValue] = useState("")
+  const [searchResults, setSearchResults] = useState([])
+
+  useEffect(() => {
+    const search = async () => {
+      setSearchResults(await searchUsers(""))
+    }
+
+    search()
+  }, [])
 
   return (
     <Container>
@@ -19,10 +30,20 @@ const SearchUsers = () => {
         onChangeText={(value) => {
           setSearchValue(value)
         }}
-        onSubmitEditing={() => {
-
+        onSubmitEditing={async () => {
+          setSearchResults(await searchUsers(searchValue))
         }}
       />
+
+      <UserList
+        sortedUsers={searchResults}
+        gotoUserPage={
+          (username, spotifyId) => {
+
+          }}
+        search={true}
+      />
+
     </Container>
   )
 }

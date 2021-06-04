@@ -6,14 +6,22 @@ const UserList = ({
   sortedUsers,
   type,
   gotoUserPage,
-  metric
+  metric,
+  search = false
 }) => {
 
   return (
-    <Container>
-      <ContentTitle>
-        {type}
-      </ContentTitle>
+    <Container
+      padding={!search}
+    >
+      {
+        type ?
+          <ContentTitle>
+            {type}
+          </ContentTitle>
+          : null
+      }
+
       <FriendList
         showsVerticalScrollIndicator={false}
       >
@@ -28,7 +36,7 @@ const UserList = ({
             >
               <FriendCard>
 
-                {i < 3 ?
+                {i < 3 && !search ?
                   <FriendBadge
                     place={i + 1}
                   >
@@ -70,7 +78,7 @@ const UserList = ({
 export default UserList
 
 const Container = styled.View`
-  padding: 10px 20px;
+  padding: ${props => props.padding ? '10px 20px' : 0};
   height: 100%;
 `
 
