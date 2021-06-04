@@ -180,6 +180,35 @@ const HomeScreen = (props) => {
       </Header>
 
       <Navigation>
+        <IndicatorContainer>
+          {[1, 2, 3, 4].map((image, imageIndex) => {
+            const width = scrollX.interpolate({
+              inputRange: [
+                windowWidth * (imageIndex - 1),
+                windowWidth * imageIndex,
+                windowWidth * (imageIndex + 1)
+              ],
+              outputRange: [0, 52, 0],
+              extrapolate: "clamp"
+            });
+
+            const opacity = scrollX.interpolate({
+              inputRange: [
+                windowWidth * (imageIndex - 1),
+                windowWidth * imageIndex,
+                windowWidth * (imageIndex + 1)
+              ],
+              outputRange: [0, 0.1, 0],
+              extrapolate: "clamp"
+            });
+            return (
+              <Animated.View
+                key={imageIndex}
+                style={[styles.normalDot, { width, opacity }]}
+              />
+            );
+          })}
+        </IndicatorContainer>
         <NavIcon>
           <Feather name="users" size={24} color="white" />
         </NavIcon>
@@ -251,30 +280,6 @@ const HomeScreen = (props) => {
 
             })}
           </MainScrollView>
-
-          {/* <View style={styles.indicatorContainer}>
-            {[1, 2, 3].map((image, imageIndex) => {
-              const width = scrollX.interpolate({
-                inputRange: [
-                  windowWidth * (imageIndex - 1),
-                  windowWidth * imageIndex,
-                  windowWidth * (imageIndex + 1)
-                ],
-                outputRange: [8, 16, 8],
-                extrapolate: "clamp"
-              });
-              let opacity = 0
-              if (parseFloat(JSON.stringify(width)) > 15) {
-                opacity = 1
-              }
-              return (
-                <Animated.View
-                  key={imageIndex}
-                  style={[styles.normalDot, { width, opacity }]}
-                />
-              );
-            })}
-          </View> */}
         </ScrollContainer>
       </Content>
     </Container>
@@ -369,49 +374,21 @@ const ScrollContainer = styled.View`
 `
 const MainScrollView = styled.ScrollView`
 `
+const IndicatorContainer = styled.View`
+  flexDirection: row;
+  alignItems: center;
+  justifyContent: center;
+  position: absolute;
+  height: 87%;
+`
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  scrollContainer: {
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  card: {
-    flex: 1,
-    marginVertical: 4,
-    marginHorizontal: 16,
-    borderRadius: 5,
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  textContainer: {
-    backgroundColor: "rgba(0,0,0, 0.7)",
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    borderRadius: 5
-  },
-  infoText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold"
-  },
   normalDot: {
-    height: 8,
-    width: 8,
+    height: 50,
+    width: 50,
     borderRadius: 4,
-    backgroundColor: "silver",
-    marginHorizontal: 4,
-    opacity: 1
-  },
-  indicatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center"
+    backgroundColor: 'white',
+    marginHorizontal: 52
   }
 });
 
