@@ -19,13 +19,15 @@ const mapStateToProps = (state) => {
   }
 }
 
-const sortUserList = (users, currentUser, metric, matches = null) => {
+const sortUserList = (users, currentUser, metric, matches = null, audioFeatures = false) => {
   friends = []
   users.map((friend) => {
 
-    // Find latest user match (matches cant be null)
+    // Step 1: Find the metric value FOR SPECIAL CASE SCENARIOS
     let metricValue = 0;
     if (metric === 'overallScore') {
+
+      // Find latest user match (matches cant be null) -> for compatibility
       let latestUserMatch = null
       const userMatches = matches.filter(item => item.otherUser === friend.username)
       if (userMatches.length > 0) {
@@ -33,24 +35,25 @@ const sortUserList = (users, currentUser, metric, matches = null) => {
           return b.dateMatched - a.dateMatched
         })[0]
       }
-
       if (latestUserMatch) {
         metricValue = latestUserMatch.overallScore
       }
-    } else {
-      if (friend[metric]) {
-        metricValue = friend[metric]
-      }
 
+    } else if (audioFeatures) {
+
+      // For audio features
+      metricValue = friend['currentAudioFeatures'][metric] * 100
     }
 
     // Current user can't be the friend
     if (friend.username !== currentUser.username) {
-      let friendData = {
-        ...friend
+
+      // Append the metric value if it doesn't already exist
+      if (!friend[metric]) {
+        friend[metric] = metricValue
       }
-      friendData[metric] = metricValue
-      friends.push(friendData)
+
+      friends.push(friend)
     }
   })
 
@@ -65,6 +68,7 @@ const HomeScreen = (props) => {
 
   const [sortedCompatibilityUsers, setSortedCompatibilityUsers] = useState(null)
   const [sortedObscurityUsers, setSortedObscurityUsers] = useState(null)
+  const [sortedHappinessUsers, setSortedHappinessUsers] = useState(null)
 
   // Page Scrolling
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -74,6 +78,11 @@ const HomeScreen = (props) => {
       title: 'Compatibility',
       users: sortedCompatibilityUsers,
       metric: 'overallScore'
+    },
+    {
+      title: 'Happiness',
+      users: sortedHappinessUsers,
+      metric: 'valence'
     },
     {
       title: 'Obscurity',
@@ -92,12 +101,15 @@ const HomeScreen = (props) => {
       // Sort compatibility list
       setSortedCompatibilityUsers(sortUserList(props.friendList, props.userData, 'overallScore', props.allMatches))
 
+      // Sort Happiness list
+      setSortedHappinessUsers(sortUserList(props.friendList, props.userData, 'valence', null, true))
+
       // Sort obscurity list
       setSortedObscurityUsers(sortUserList(props.friendList, props.userData, 'recentObscurifyPercentile'))
     }
   }, [props.friendList, props.allMatches])
 
-  if (!sortedCompatibilityUsers && !sortedObscurityUsers) return null
+  if (!sortedCompatibilityUsers && !sortedObscurityUsers && !sortedHappinessUsers) return null
   return (
     <Container>
       <Header>
@@ -142,15 +154,17 @@ const HomeScreen = (props) => {
             caption={"Top Genre"}
           />
 
+
+          <HeaderCard
+            title={Math.round(props.userData.currentAudioFeatures.valence * 100).toString() + "%"}
+            caption={"Happiness"}
+          />
+
           <HeaderCard
             title={props.userData.recentObscurifyPercentile.toString() + "%"}
             caption={"Obscurity Score"}
           />
 
-          <HeaderCard
-            title={"Indie Pop"}
-            caption={"Happiness"}
-          />
 
         </HeaderCards>
       </Header>
