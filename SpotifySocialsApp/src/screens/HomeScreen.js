@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { TouchableOpacity, ScrollView } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { TouchableOpacity, Animated, useWindowDimensions, StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
 import { Feather, MaterialIcons } from '@expo/vector-icons';
@@ -19,51 +19,85 @@ const mapStateToProps = (state) => {
   }
 }
 
-const sortUserList = (users, matches, currentUser) => {
+const sortUserList = (users, currentUser, metric, matches = null) => {
   friends = []
   users.map((friend) => {
 
-    const userMatches = matches.filter(item => item.otherUser === friend.username)
+    // Find latest user match (matches cant be null)
+    let metricValue = 0;
+    if (metric === 'overallScore') {
+      let latestUserMatch = null
+      const userMatches = matches.filter(item => item.otherUser === friend.username)
+      if (userMatches.length > 0) {
+        latestUserMatch = userMatches.sort(function (a, b) {
+          return b.dateMatched - a.dateMatched
+        })[0]
+      }
 
-    let latestUserMatch = null
-    if (userMatches.length > 0) {
-      latestUserMatch = userMatches.sort(function (a, b) {
-        return b.dateMatched - a.dateMatched
-      })[0]
+      if (latestUserMatch) {
+        metricValue = latestUserMatch.overallScore
+      }
+    } else {
+      if (friend[metric]) {
+        metricValue = friend[metric]
+      }
+
     }
 
+    // Current user can't be the friend
     if (friend.username !== currentUser.username) {
-      friends.push({
-        overallScore: 0,
-        ...friend,
-        ...latestUserMatch
-      })
+      let friendData = {
+        ...friend
+      }
+      friendData[metric] = metricValue
+      friends.push(friendData)
     }
   })
 
-  friends.sort((a, b) => (a.overallScore < b.overallScore) ? 1 : -1)
+  friends.sort((a, b) => (a[metric] < b[metric]) ? 1 : -1)
 
   return friends
 
 }
 
+
 const HomeScreen = (props) => {
 
-  const [sortedUsers, setSortedUsers] = useState(null)
+  const [sortedCompatibilityUsers, setSortedCompatibilityUsers] = useState(null)
+  const [sortedObscurityUsers, setSortedObscurityUsers] = useState(null)
+
+  // Page Scrolling
+  const scrollX = useRef(new Animated.Value(0)).current;
+  const { width: windowWidth } = useWindowDimensions();
+  const pages = [
+    {
+      title: 'Compatibility',
+      users: sortedCompatibilityUsers,
+      metric: 'overallScore'
+    },
+    {
+      title: 'Obscurity',
+      users: sortedObscurityUsers,
+      metric: 'recentObscurifyPercentile'
+    }
+  ]
 
   useEffect(() => {
     props.getAllMatches(props.userData.username)
     props.getFriendList(props.userData.username)
-
   }, [])
 
   useEffect(() => {
-    if (props.friendList) {
-      setSortedUsers(sortUserList(props.friendList, props.allMatches, props.userData))
-    }
-  }, [props.friendList])
+    if (props.friendList && props.allMatches) {
+      // Sort compatibility list
+      setSortedCompatibilityUsers(sortUserList(props.friendList, props.userData, 'overallScore', props.allMatches))
 
-  if (!sortedUsers) return null
+      // Sort obscurity list
+      setSortedObscurityUsers(sortUserList(props.friendList, props.userData, 'recentObscurifyPercentile'))
+    }
+  }, [props.friendList, props.allMatches])
+
+  if (!sortedCompatibilityUsers && !sortedObscurityUsers) return null
   return (
     <Container>
       <Header>
@@ -126,10 +160,10 @@ const HomeScreen = (props) => {
           <Feather name="users" size={24} color="white" />
         </NavIcon>
         <NavIcon>
-          <Feather name="smile" size={24} color="white" />
+          <MaterialIcons name="library-music" size={24} color="white" />
         </NavIcon>
         <NavIcon>
-          <MaterialIcons name="library-music" size={24} color="white" />
+          <Feather name="smile" size={24} color="white" />
         </NavIcon>
         <NavIcon>
           <Feather name="search" size={24} color="white" />
@@ -137,16 +171,67 @@ const HomeScreen = (props) => {
       </Navigation>
 
       <Content>
-        <UserList
-          type="Compatibility"
-          sortedUsers={sortedUsers}
-          gotoUserPage={
-            (username, spotifyId) => {
-              props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
-            }
-          }
-          currentUser={props.userData}
-        />
+        <ScrollContainer>
+          <MainScrollView
+            horizontal={true}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={Animated.event([
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: scrollX
+                  }
+                }
+              }
+            ])}
+            scrollEventThrottle={1}
+          >
+            {pages.map((page, pageIndex) => {
+              return (
+                <View
+                  style={{ width: windowWidth }}
+                  key={pageIndex}
+                >
+                  <UserList
+                    type={page.title}
+                    sortedUsers={page.users}
+                    gotoUserPage={
+                      (username, spotifyId) => {
+                        props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
+                      }
+                    }
+                    metric={page.metric}
+                  />
+                </View>
+              );
+            })}
+          </MainScrollView>
+
+          {/* <View style={styles.indicatorContainer}>
+            {[1, 2, 3].map((image, imageIndex) => {
+              const width = scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (imageIndex - 1),
+                  windowWidth * imageIndex,
+                  windowWidth * (imageIndex + 1)
+                ],
+                outputRange: [8, 16, 8],
+                extrapolate: "clamp"
+              });
+              let opacity = 0
+              if (parseFloat(JSON.stringify(width)) > 15) {
+                opacity = 1
+              }
+              return (
+                <Animated.View
+                  key={imageIndex}
+                  style={[styles.normalDot, { width, opacity }]}
+                />
+              );
+            })}
+          </View> */}
+        </ScrollContainer>
       </Content>
     </Container>
   )
@@ -168,7 +253,6 @@ const Content = styled.View`
   box-shadow: 0 -10px 20px rgba(0,0,0,0.15)
   margin-top: -15px;
   flex: 1;
-  padding: 20px;
 `
 
 const Navigation = styled.View`
@@ -229,6 +313,58 @@ font-size: 15px;
 color: #848484;
 font-family: TTCommons-Medium
 `
+const ScrollContainer = styled.View`
+  alignItems: center;
+  justifyContent: center;
+`
+const MainScrollView = styled.ScrollView`
+`
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  scrollContainer: {
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  card: {
+    flex: 1,
+    marginVertical: 4,
+    marginHorizontal: 16,
+    borderRadius: 5,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  textContainer: {
+    backgroundColor: "rgba(0,0,0, 0.7)",
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 5
+  },
+  infoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold"
+  },
+  normalDot: {
+    height: 8,
+    width: 8,
+    borderRadius: 4,
+    backgroundColor: "silver",
+    marginHorizontal: 4,
+    opacity: 1
+  },
+  indicatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center"
+  }
+});
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen)
 

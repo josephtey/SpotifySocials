@@ -6,11 +6,11 @@ const UserList = ({
   sortedUsers,
   type,
   gotoUserPage,
-  currentUser
+  metric
 }) => {
 
   return (
-    <View>
+    <Container>
       <ContentTitle>
         {type}
       </ContentTitle>
@@ -46,28 +46,32 @@ const UserList = ({
                     @{friend.username}
                   </FriendCaption>
                 </FriendLeft>
-                {friend.overallScore ?
+                {friend[metric] ?
                   <FriendRight
                     place={i}
                   >
                     <FriendStats>
-                      {Math.round(friend.overallScore)}%
+                      {Math.round(friend[metric])}%
                   </FriendStats>
                   </FriendRight>
                   : null}
               </FriendCard>
               <ProgressLine
-                progress={friend.overallScore}
+                progress={friend[metric]}
               />
             </User>
           )
         })}
       </FriendList>
-    </View>
+    </Container>
   )
 }
 
 export default UserList
+
+const Container = styled.View`
+  padding: 10px 20px;
+`
 
 const User = styled.TouchableOpacity`
   margin-bottom: 15px;

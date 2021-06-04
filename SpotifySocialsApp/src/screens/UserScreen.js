@@ -135,6 +135,7 @@ const UserScreen = (props) => {
           <Artists
             horizontal={true}
             showsHorizontalScrollIndicator={false}
+            dataExists={props.userMatch.artistDetails && props.userMatch.artistDetails.length > 0}
           >
             <MusicList
               data={props.userMatch.artistDetails}
@@ -157,14 +158,10 @@ const UserScreen = (props) => {
 
 }
 
-const Typography = styled.Text`
-  font-family: TTCommons-Medium;
-  color: grey;
-`
 const Artists = styled.ScrollView`
-  paddingBottom: 30px;
-  paddingTop: 15px;
-  paddingLeft: 20px;
+  paddingBottom: ${props => props.dataExists ? '30px' : '0'};
+  paddingTop: ${props => props.dataExists ? '15px' : '0'};
+  paddingLeft: ${props => props.dataExists ? '20px' : '0'};
 `
 
 const Genre = styled.View`

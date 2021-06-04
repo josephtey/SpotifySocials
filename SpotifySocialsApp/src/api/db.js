@@ -26,7 +26,6 @@ export const getUser = async (spotifyId) => {
 
 export const searchUsers = async (username) => {
     const response = await db.post('/searchUsers', { username })
-
     return response.data
 };
 

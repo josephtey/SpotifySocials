@@ -48,7 +48,7 @@ router.post('/searchUsers', async (req, res) => {
     const { username } = req.body
 
     try {
-        const users = await User.find({ username: { $regex: "(?i)^" + username } }, 'spotifyId username displayName')
+        const users = await User.find({ username: { $regex: "(?i)^" + username } }, 'spotifyId username displayName recentObscurifyPercentile currentAudioFeatures')
         res.send(users)
 
     } catch (err) {
