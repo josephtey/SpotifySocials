@@ -1,15 +1,29 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { Animated } from 'react-native'
+import { Animated, RefreshControl } from 'react-native'
 import styled from "styled-components";
+
+const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 const UserList = ({
   sortedUsers,
   type,
   gotoUserPage,
   metric,
-  search = false
+  search = false,
+  refresh
 }) => {
   const [scale, setScale] = useState(new Animated.Value(0))
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    refresh()
+    wait(1000).then(() => {
+      setRefreshing(false)
+    });
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -38,6 +52,12 @@ const UserList = ({
         contentContainerStyle={{
           paddingBottom: 100
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
       >
 
         {sortedUsers.map((friend, i) => {

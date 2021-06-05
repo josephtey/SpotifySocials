@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Text } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
 import { generateProfile } from '../actions/auth'
@@ -15,6 +16,7 @@ const mapStateToProps = (state) => {
 const InitialiseScreen = (props) => {
 
   const [username, setUsername] = useState()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (props.userData) {
@@ -22,35 +24,45 @@ const InitialiseScreen = (props) => {
     }
   }, [props])
 
+
   return (
     <Container>
       <Name>
         {props.spotifyProfile.display_name}
       </Name>
-      <ProfilePicture
-        source={{
-          uri: props.spotifyProfile.images.length > 0
-            ? props.spotifyProfile.images[0].url
-            : 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640'
-        }}
-      />
-      <Title>Get Started</Title>
-      <CustomTextbox
-        placeholder="User Name"
-        placeholderTextColor="#727272"
-        autoCorrect={false}
-        autoCapitalize="none"
-        onChangeText={(value) => {
-          setUsername(value)
-        }}
-      />
-      <SecondaryButton
-        onPress={() => {
-          props.generateProfile(username, props.spotifyProfile)
-        }}
-      >
-        <SecondaryButtonText>Generate Profile</SecondaryButtonText>
-      </SecondaryButton>
+
+
+      {loading ?
+        <Text>Loading</Text>
+        :
+        <>
+          <ProfilePicture
+            source={{
+              uri: props.spotifyProfile.images.length > 0
+                ? props.spotifyProfile.images[0].url
+                : 'https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640'
+            }}
+          />
+          <Title>Get Started</Title>
+          <CustomTextbox
+            placeholder="User Name"
+            placeholderTextColor="#727272"
+            autoCorrect={false}
+            autoCapitalize="none"
+            onChangeText={(value) => {
+              setUsername(value)
+            }}
+          />
+          <SecondaryButton
+            onPress={() => {
+              props.generateProfile(username, props.spotifyProfile)
+              setLoading(true)
+            }}
+          >
+            <SecondaryButtonText>Generate Profile</SecondaryButtonText>
+          </SecondaryButton>
+        </>
+      }
 
       <Disclaimer>
         We will use your Spotify data to generate your profile
@@ -66,7 +78,7 @@ const CustomTextbox = styled.TextInput`
     width: 60%;
     padding: 15px;
     margin-bottom: 20px;
-    color: rgba(255, 255, 255, 0.4)
+    color: rgba(255, 255, 255, 1)
 `
 const Container = styled.View`
     alignItems: center;
@@ -96,7 +108,7 @@ const Title = styled.Text`
     font-size: 50px;
     font-family: TTCommons-Bold;
     text-align: center;
-    margin-top: 10px;
+    margin: 20px 0;
     color: #1EB955
 `
 

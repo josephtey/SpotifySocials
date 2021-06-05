@@ -130,7 +130,7 @@ const UserScreen = (props) => {
             fullWidth={props.navigation.getParam('currentUserProfile')}
           >
             <ProfileFeature
-              type="Genre"
+              type="Top Genre"
               icon={<AntDesign name="heart" size={20} color="#171E31" />}
               value={
                 props.userMatch.genreDetails
@@ -141,7 +141,7 @@ const UserScreen = (props) => {
             />
 
             <ProfileFeature
-              type="Artist"
+              type="Top Artist"
               icon={<AntDesign name="star" size={20} color="#171E31" />}
               value={props.userMatch.artistDetails
                 && props.userMatch.artistDetails.length > 0

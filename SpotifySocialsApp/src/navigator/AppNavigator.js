@@ -7,11 +7,16 @@ import UserScreen from '../screens/UserScreen'
 
 const navigator = createStackNavigator({
   Login: LoginScreen,
-  Initialise: InitialiseScreen,
+  Initialise: {
+    screen: InitialiseScreen,
+    navigationOptions: {
+      gestureEnabled: false
+    }
+  },
   Home: {
     screen: HomeScreen,
     navigationOptions: {
-      gesturesEnabled: false
+      gestureEnabled: false
     }
   },
   User: UserScreen

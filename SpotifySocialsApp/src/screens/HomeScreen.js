@@ -335,6 +335,9 @@ const HomeScreen = (props) => {
                             props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
                           }
                         }
+                        refresh={() => {
+                          props.getFriendList(props.userData.username)
+                        }}
                         metric={page.metric}
                       />
                     </View>

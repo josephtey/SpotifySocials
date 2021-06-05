@@ -14,13 +14,13 @@ const SearchUsers = ({
   const [searchValue, setSearchValue] = useState("")
   const [searchResults, setSearchResults] = useState([])
 
-  useEffect(() => {
-    const search = async () => {
-      const searchedUsers = await searchUsers("")
-      setSearchResults(searchedUsers.filter(user => user.username !== currentUser.username))
-    }
+  const search = async (value) => {
+    const searchedUsers = await searchUsers(value)
+    setSearchResults(searchedUsers.filter(user => user.username !== currentUser.username))
+  }
 
-    search()
+  useEffect(() => {
+    search("")
   }, [])
 
   return (
@@ -65,6 +65,9 @@ const SearchUsers = ({
             await addFriend(username)
           }}
         search={true}
+        refresh={() => {
+          search(searchValue)
+        }}
       />
 
     </Container>

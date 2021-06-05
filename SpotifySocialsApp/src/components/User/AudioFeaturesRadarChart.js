@@ -68,7 +68,7 @@ const AudioFeaturesRadarChart = ({
         domain={{ y: [0, 1] }}
       >
         <VictoryGroup colorScale={["#2ac940", "#f6527c"]}
-          style={{ data: { fillOpacity: 0.2, strokeWidth: 1.5 } }}
+          style={{ data: { fillOpacity: 0.2, strokeWidth: 3 } }}
         >
           {data.map((data, i) => {
             return <VictoryArea key={i} data={data} />;
@@ -83,8 +83,8 @@ const AudioFeaturesRadarChart = ({
                 }}
 
                 axisLabelComponent={<VictoryLabel style={{ 'fill': 'none' }} />}
-                axisComponent={<LineSegment type={"axis"} style={{ strokeWidth: '2px', stroke: "rgba(255, 255, 255, 0)" }} />}
-                circularGridComponent={<Arc type={"axis"} style={{ strokeWidth: '2px', stroke: "rgba(255, 255, 255, 0.01)" }} />}
+                axisComponent={<LineSegment type={"axis"} style={{ strokeWidth: '4px', stroke: "rgba(255, 255, 255, 0)" }} />}
+                circularGridComponent={<Arc type={"axis"} style={{ strokeWidth: '4px', stroke: "rgba(255, 255, 255, 0.01)" }} />}
                 tickLabelComponent={
                   <VictoryLabel style={{ fill: "none" }} />
                 }
@@ -100,9 +100,9 @@ const AudioFeaturesRadarChart = ({
           labelPlacement="parallel"
           tickFormat={() => ""}
           style={{
-            axis: { strokeWidth: '2px', stroke: "white", opacity: 0.07 },
+            axis: { strokeWidth: '4px', stroke: "white", opacity: 0.07 },
           }}
-          gridComponent={<LineSegment type={"grid"} style={{ strokeWidth: '2px', stroke: "rgba(255, 255, 255, 0.07)" }} />}
+          gridComponent={<LineSegment type={"grid"} style={{ strokeWidth: '4px', stroke: "rgba(255, 255, 255, 0.07)" }} />}
         />
 
       </VictoryChart>
