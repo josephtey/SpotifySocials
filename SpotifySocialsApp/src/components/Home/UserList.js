@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { TouchableOpacity, View, ScrollView, Text } from 'react-native'
+import { Animated } from 'react-native'
 import styled from "styled-components";
 
 const UserList = ({
@@ -9,6 +9,17 @@ const UserList = ({
   metric,
   search = false
 }) => {
+  const [scale, setScale] = useState(new Animated.Value(0))
+
+  useEffect(() => {
+    setTimeout(() => {
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: false
+      }).start()
+    }, 500)
+
+  }, [])
 
   return (
     <Container
@@ -24,6 +35,9 @@ const UserList = ({
 
       <FriendList
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 100
+        }}
       >
 
         {sortedUsers.map((friend, i) => {
@@ -34,65 +48,73 @@ const UserList = ({
                 gotoUserPage(friend.username, friend.spotifyId)
               }}
             >
-              <FriendCard>
-
-                {i < 3 && !search ?
-                  <FriendBadge
-                    place={i + 1}
-                  >
-                    <FriendStats>
-                      {i + 1}
-                    </FriendStats>
-                  </FriendBadge>
-                  : null
-                }
-                <FriendLeft>
-                  <FriendMain>
-                    {friend.displayName}
-                  </FriendMain>
-                  <FriendCaption>
-                    @{friend.username}
-                  </FriendCaption>
-                </FriendLeft>
-                {friend[metric] ?
-                  <FriendRight
-                    place={i}
-                  >
-                    <FriendStats>
-                      {Math.round(friend[metric])}%
+              <AnimatedFriendCard
+                style={{
+                  transform: [
+                    { scale }
+                  ]
+                }}
+              >
+                <FriendCard>
+                  {i < 3 && !search ?
+                    <FriendBadge
+                      place={i + 1}
+                    >
+                      <FriendStats>
+                        {i + 1}
+                      </FriendStats>
+                    </FriendBadge>
+                    : null
+                  }
+                  <FriendLeft>
+                    <FriendMain>
+                      {friend.displayName}
+                    </FriendMain>
+                    <FriendCaption>
+                      @{friend.username}
+                    </FriendCaption>
+                  </FriendLeft>
+                  {friend[metric] ?
+                    <FriendRight
+                      place={i}
+                    >
+                      <FriendStats>
+                        {Math.round(friend[metric])}%
                   </FriendStats>
-                  </FriendRight>
-                  : null}
+                    </FriendRight>
+                    : null}
 
-                {search ?
-                  <>
-                    {
-                      friend.status === 'friends' ?
-                        null
-                        : friend.status === 'not friends' ?
-                          <FriendRight>
-                            <FriendStats>
-                              Add
-                          </FriendStats>
-                          </FriendRight>
-                          : friend.status === 'pending' ?
-                            <FriendRight
-                              disabled={true}
-                            >
+                  {search ?
+                    <>
+                      {
+                        friend.status === 'friends' ?
+                          null
+                          : friend.status === 'not friends' ?
+                            <FriendRight>
                               <FriendStats>
-                                Sent
-                           </FriendStats>
+                                Add
+                          </FriendStats>
                             </FriendRight>
-                            : null
-                    }
+                            : friend.status === 'pending' ?
+                              <FriendRight
+                                disabled={true}
+                              >
+                                <FriendStats>
+                                  Sent
+                           </FriendStats>
+                              </FriendRight>
+                              : null
+                      }
 
-                  </>
-                  : null}
+                    </>
+                    : null}
+                </FriendCard>
 
-              </FriendCard>
-              <ProgressLine
-                progress={friend[metric]}
-              />
+                <ProgressLine
+                  progress={friend[metric]}
+                />
+              </AnimatedFriendCard>
+
             </User>
           )
         })}
@@ -106,7 +128,6 @@ export default UserList
 const Container = styled.View`
   padding: ${props => props.padding ? '10px 20px' : 0};
   height: 100%;
-  paddingBottom: 70px;
 `
 
 const User = styled.TouchableOpacity`
@@ -184,5 +205,9 @@ const ProgressLine = styled.View`
 
 `
 const FriendList = styled.ScrollView`
- margin-bottom: 60px
 `
+
+const FriendCardWrapper = styled.View`
+  
+`
+const AnimatedFriendCard = Animated.createAnimatedComponent(FriendCardWrapper);

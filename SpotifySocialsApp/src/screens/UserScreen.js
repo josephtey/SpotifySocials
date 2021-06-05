@@ -28,41 +28,41 @@ const mapStateToProps = (state) => {
 const UserScreen = (props) => {
 
   // Animated Elements
-  const [userInfoOpacity, setUserInfoOpacity] = useState(new Animated.Value(0))
-  const [userInfoMarginTop, setUserInfoMarginTop] = useState(new Animated.Value(-50))
-
-  const [subheaderTop, setSubheaderTop] = useState(new Animated.Value(-20))
-  const [subheaderOpacity, setSubheaderOpacity] = useState(new Animated.Value(0))
+  const [userInfoScale, setUserInfoScale] = useState(new Animated.Value(0))
+  const [userInfoRotate, setUserInfoRotate] = useState(new Animated.Value(0.5))
+  const [subheaderScale, setSubheaderScale] = useState(new Animated.Value(0))
+  const [audioFeaturesScale, setAudioFeaturesScale] = useState(new Animated.Value(0))
+  const [headerHeight, setHeaderHeight] = useState(new Animated.Value(350))
 
   useEffect(() => {
+
+  }, [])
+  useEffect(() => {
+
     if (props.userProfile.username) {
-      Animated.timing(userInfoOpacity, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: false
-      }).start()
+      setTimeout(() => {
+        Animated.spring(userInfoScale, {
+          toValue: 1,
+          useNativeDriver: false
+        }).start()
 
-      Animated.timing(userInfoMarginTop, {
-        toValue: 0,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: false
-      }).start()
+        Animated.spring(userInfoRotate, {
+          toValue: 0,
+          useNativeDriver: false
+        }).start()
 
-      Animated.timing(subheaderTop, {
-        toValue: -65,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: false
-      }).start()
 
-      Animated.timing(subheaderOpacity, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: false
-      }).start()
+        Animated.spring(subheaderScale, {
+          toValue: 1,
+          useNativeDriver: false
+        }).start()
+
+        Animated.spring(audioFeaturesScale, {
+          toValue: 1,
+          useNativeDriver: false
+        }).start()
+      }, 0)
+
     }
   }, [props.userProfile.username])
 
@@ -85,7 +85,9 @@ const UserScreen = (props) => {
         bounces={false}
       >
 
-        <Header>
+        <AnimatedHeader
+          style={{ height: headerHeight }}
+        >
           <BackButtonWrapper
             onPress={() => {
               props.navigation.goBack();
@@ -94,7 +96,15 @@ const UserScreen = (props) => {
             <AntDesign name="left" size={24} color="white" />
           </BackButtonWrapper>
           <AnimatedUserInfo
-            style={{ opacity: userInfoOpacity, marginTop: userInfoMarginTop }}
+            style={{
+              transform: [
+                {
+                  scale: userInfoScale
+                },
+                {
+                  rotate: userInfoRotate
+                }]
+            }}
           >
             <UserProfile
               source={{
@@ -105,10 +115,16 @@ const UserScreen = (props) => {
               {props.userProfile.username}
             </UserName>
           </AnimatedUserInfo>
-        </Header>
+        </AnimatedHeader>
 
         <AnimatedSubHeader
-          style={{ marginTop: subheaderTop, opacity: subheaderOpacity }}
+          style={{
+            transform: [
+              {
+                scale: subheaderScale
+              }
+            ]
+          }}
         >
           <ProfileSummary
             fullWidth={props.navigation.getParam('currentUserProfile')}
@@ -148,19 +164,28 @@ const UserScreen = (props) => {
           </Comparison>
         </AnimatedSubHeader>
 
-        <AudioFeaturesPanel>
-          <AudioFeaturesIconBG />
-          <AudioFeaturesIconWrapper>
-            <FontAwesome name="microphone" size={27} color="#43568C" />
-          </AudioFeaturesIconWrapper>
+        <AnimatedAudioFeaturesContent
+          style={{
+            transform: [
+              {
+                scale: audioFeaturesScale
+              }
+            ]
+          }}
+        >
+          <AudioFeaturesPanel>
+            <AudioFeaturesTitle>
+              Audio Features
+            </AudioFeaturesTitle>
 
-          {props.userProfile.currentAudioFeatures ?
-            <AudioFeaturesRadarChart
-              graphData={[props.userData.currentAudioFeatures, props.userProfile.currentAudioFeatures]}
-            />
-            : null}
+            {props.userProfile.currentAudioFeatures ?
+              <AudioFeaturesRadarChart
+                graphData={[props.userData.currentAudioFeatures, props.userProfile.currentAudioFeatures]}
+              />
+              : null}
 
-        </AudioFeaturesPanel>
+          </AudioFeaturesPanel>
+        </AnimatedAudioFeaturesContent>
 
         <WhiteCardPanel>
           <PanelTitle>Genres</PanelTitle>
@@ -207,7 +232,7 @@ const UserScreen = (props) => {
         </WhiteCardPanel>
 
       </ScrollView>
-    </Container>
+    </Container >
   )
 
 
@@ -261,29 +286,25 @@ const PanelTitle = styled.Text`
 
 const WhiteCardPanel = styled.View`
   background: #ffffff;
-  margin: 0 25px 55px 25px;
+  margin: 0 25px 30px 25px;
   border-radius: 12px;
   box-shadow: 10px 10px 20px rgba(0,0,0, 0.1);
   padding: 25px;
 `
 
-const AudioFeaturesIconWrapper = styled.View`
-  position: absolute;
-  left: 52px;
-  top: -14px;
+
+const AudioFeaturesTitle = styled.Text`
+  color: rgba(255, 255, 255, 0.2);
+  align-self: flex-start;
+  fontSize: 20px;
+  paddingLeft: 20px;
+  font-family: TTCommons-Bold;
 `
-const AudioFeaturesIconBG = styled.View`
-  padding: 35px;
-  border-radius:50px;
-  background: white;
-  position: absolute;
-  left: 25px;
-  top: -35px;
-`
+
 const AudioFeaturesPanel = styled.View`
   background: #26304D;
-  height: 350px;
-  margin: 65px 25px 55px 25px;
+  height: 370px;
+  margin: 40px 25px 45px 25px;
   border-radius: 12px;
   box-shadow: 10px 10px 30px rgba(67, 86, 140, 0.93);
   justifyContent: center;
@@ -363,9 +384,13 @@ const UserInfo = styled.View`
   justifyContent: center;
   alignItems: center;
 `
+const AudioFeaturesContent = styled.View`
+`
 
 const AnimatedUserInfo = Animated.createAnimatedComponent(UserInfo)
 const AnimatedSubHeader = Animated.createAnimatedComponent(SubHeader)
+const AnimatedAudioFeaturesContent = Animated.createAnimatedComponent(AudioFeaturesContent)
+const AnimatedHeader = Animated.createAnimatedComponent(Header)
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)
 

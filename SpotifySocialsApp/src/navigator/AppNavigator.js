@@ -4,7 +4,6 @@ import LoginScreen from '../screens/LoginScreen'
 import InitialiseScreen from '../screens/InitialiseScreen'
 import HomeScreen from '../screens/HomeScreen'
 import UserScreen from '../screens/UserScreen'
-import NotificationsScreen from '../screens/NotificationsScreen'
 
 const navigator = createStackNavigator({
   Login: LoginScreen,
@@ -15,8 +14,7 @@ const navigator = createStackNavigator({
       gesturesEnabled: false
     }
   },
-  User: UserScreen,
-  Notifications: NotificationsScreen
+  User: UserScreen
 },
   {
     initialRouteName: 'Login',

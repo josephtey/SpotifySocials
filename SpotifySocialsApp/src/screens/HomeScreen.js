@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { TouchableOpacity, Animated, useWindowDimensions, StyleSheet, SafeAreaView, ScrollView, View, Text } from 'react-native'
+import { TouchableOpacity, Animated, useWindowDimensions, StyleSheet, Easing, View, Text } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
 import { Feather, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { getFriendList, getRequestedFriends, addNewFriend } from '../actions/friends'
+import { openMenu, closeMenu } from '../actions/notifications'
 import { getAllMatches } from '../actions/profile'
 import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
 import SearchUsers from '../components/Home/SearchUsers'
+import Notifications from '../components/Home/Notifications'
+import Loading from '../components/Home/Loading'
 
-const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend }
+
+const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend, openMenu }
 
 const mapStateToProps = (state) => {
   return {
     spotifyProfile: state.auth.spotifyProfile,
     userData: state.auth.userData,
     ...state.friends,
-    ...state.profile
+    ...state.profile,
+    ...state.notifications
   }
 }
 
@@ -67,6 +72,11 @@ const sortUserList = (users, currentUser, metric, matches = null, audioFeatures 
 
 const HomeScreen = (props) => {
 
+  // Animations
+  const [scale, setScale] = useState(new Animated.Value(1))
+  const [opacity, setOpacity] = useState(new Animated.Value(1))
+
+  // User Lists
   const [sortedCompatibilityUsers, setSortedCompatibilityUsers] = useState(null)
   const [sortedObscurityUsers, setSortedObscurityUsers] = useState(null)
   const [sortedHappinessUsers, setSortedHappinessUsers] = useState(null)
@@ -103,6 +113,39 @@ const HomeScreen = (props) => {
   }, [])
 
   useEffect(() => {
+    if (props.action == "openMenu") {
+      Animated.parallel([
+        Animated.timing(scale, {
+          toValue: 0.9,
+          duration: 300,
+          easing: Easing.in(),
+          useNativeDriver: true
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.5,
+          duration: 300,
+          useNativeDriver: true
+        })
+      ]).start();
+    }
+
+    if (props.action == "closeMenu") {
+      Animated.parallel([
+        Animated.timing(scale, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true
+        })
+      ]).start();
+    }
+  }, [props.action])
+
+  useEffect(() => {
     if (props.friendList && props.allMatches) {
       // Sort compatibility list
       setSortedCompatibilityUsers(sortUserList(props.friendList, props.userData, 'overallScore', props.allMatches))
@@ -115,202 +158,220 @@ const HomeScreen = (props) => {
     }
   }, [props.friendList, props.allMatches])
 
-  if (!sortedCompatibilityUsers && !sortedObscurityUsers && !sortedHappinessUsers) return null
+  if (!sortedCompatibilityUsers || !sortedObscurityUsers || !sortedHappinessUsers) return (
+    <Text>Loading</Text>
+  )
   return (
-    <Container>
-      <Header>
-        <TopBar>
-
-
-          <CurrentUser>
-            <TouchableOpacity
-              onPress={() => {
-                props.navigation.navigate('User', {
-                  username: props.userData.username,
-                  spotifyId: props.userData.spotifyId,
-                  currentUserProfile: true
-                })
-              }}>
-              <UserInfo>
-                <UserName>
-                  {props.spotifyProfile.display_name}
-                </UserName>
-                <UserCaption>
-                  @{props.userData.username}
-                </UserCaption>
-              </UserInfo>
-
-            </TouchableOpacity>
-
-            <UserRight>
+    <RootView>
+      <Notifications />
+      <AnimatedContainer
+        style={{
+          transform: [{
+            scale
+          }],
+          opacity
+        }}
+      >
+        <Header>
+          <TopBar>
+            <CurrentUser>
               <TouchableOpacity
                 onPress={() => {
-                  props.navigation.navigate('Notifications')
-                }}
-              >
-                <AntDesign name="bells" size={24} color="white" />
+                  props.navigation.navigate('User', {
+                    username: props.userData.username,
+                    spotifyId: props.userData.spotifyId,
+                    currentUserProfile: true
+                  })
+                }}>
+                <UserInfo>
+                  <UserName>
+                    {props.spotifyProfile.display_name}
+                  </UserName>
+                  <UserCaption>
+                    @{props.userData.username}
+                  </UserCaption>
+                </UserInfo>
+
               </TouchableOpacity>
-              <UserIcon
-                source={{
-                  uri: props.spotifyProfile.images.length > 0 ?
-                    props.spotifyProfile.images[0].url :
-                    "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
-                }}
+
+              <UserRight>
+                <TouchableOpacity
+                  onPress={() => {
+                    props.openMenu()
+                  }}
+                >
+                  <AntDesign name="bells" size={24} color="white" />
+                </TouchableOpacity>
+                <UserIcon
+                  source={{
+                    uri: props.spotifyProfile.images.length > 0 ?
+                      props.spotifyProfile.images[0].url :
+                      "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
+                  }}
+                />
+              </UserRight>
+            </CurrentUser>
+
+
+          </TopBar>
+          <UserStats>
+            <HeaderCards
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              <HeaderCard
+                title={Object.keys(props.userData.currentTopGenres).reduce(function (a, b) { return props.userData.currentTopGenres[a] > props.userData.currentTopGenres[b] ? a : b })}
+                caption={"Top Genre"}
               />
-            </UserRight>
-          </CurrentUser>
 
 
-        </TopBar>
-        <UserStats>
-          <HeaderCards
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
+              <HeaderCard
+                title={Math.round(props.userData.currentAudioFeatures.valence * 100).toString() + "%"}
+                caption={"Happiness"}
+              />
+
+              <HeaderCard
+                title={props.userData.recentObscurifyPercentile.toString() + "%"}
+                caption={"Obscurity Score"}
+              />
+
+
+            </HeaderCards>
+          </UserStats>
+        </Header>
+
+        <Navigation>
+          <IndicatorContainer>
+            {pages.map((page, pageIndex) => {
+              const width = scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (pageIndex - 1),
+                  windowWidth * pageIndex,
+                  windowWidth * (pageIndex + 1)
+                ],
+                outputRange: [0, 52, 0],
+                extrapolate: "clamp"
+              });
+
+              const opacity = scrollX.interpolate({
+                inputRange: [
+                  windowWidth * (pageIndex - 1),
+                  windowWidth * pageIndex,
+                  windowWidth * (pageIndex + 1)
+                ],
+                outputRange: [0, 0.1, 0],
+                extrapolate: "clamp"
+              });
+              return (
+                <Animated.View
+                  key={pageIndex}
+                  style={[styles.normalDot, { width, opacity }]}
+                />
+              );
+            })}
+          </IndicatorContainer>
+          <NavIcon
+            onPress={() => {
+              scroll.current.scrollTo({ x: 0 })
+            }}
           >
-            <HeaderCard
-              title={Object.keys(props.userData.currentTopGenres).reduce(function (a, b) { return props.userData.currentTopGenres[a] > props.userData.currentTopGenres[b] ? a : b })}
-              caption={"Top Genre"}
-            />
+            <Feather name="users" size={24} color="white" />
+          </NavIcon>
+          <NavIcon
+            onPress={() => {
+              scroll.current.scrollTo({ x: windowWidth })
+            }}
+          >
+            <Feather name="smile" size={24} color="white" />
+          </NavIcon>
+          <NavIcon
+            onPress={() => {
+              scroll.current.scrollTo({ x: windowWidth * 2 })
+            }}
+          >
+            <MaterialIcons name="library-music" size={24} color="white" />
+          </NavIcon>
+          <NavIcon
+            onPress={() => {
+              scroll.current.scrollTo({ x: windowWidth * 3 })
+            }}
+          >
+            <Feather name="search" size={24} color="white" />
+          </NavIcon>
+        </Navigation>
 
-
-            <HeaderCard
-              title={Math.round(props.userData.currentAudioFeatures.valence * 100).toString() + "%"}
-              caption={"Happiness"}
-            />
-
-            <HeaderCard
-              title={props.userData.recentObscurifyPercentile.toString() + "%"}
-              caption={"Obscurity Score"}
-            />
-
-
-          </HeaderCards>
-        </UserStats>
-      </Header>
-
-      <Navigation>
-        <IndicatorContainer>
-          {pages.map((page, pageIndex) => {
-            const width = scrollX.interpolate({
-              inputRange: [
-                windowWidth * (pageIndex - 1),
-                windowWidth * pageIndex,
-                windowWidth * (pageIndex + 1)
-              ],
-              outputRange: [0, 52, 0],
-              extrapolate: "clamp"
-            });
-
-            const opacity = scrollX.interpolate({
-              inputRange: [
-                windowWidth * (pageIndex - 1),
-                windowWidth * pageIndex,
-                windowWidth * (pageIndex + 1)
-              ],
-              outputRange: [0, 0.1, 0],
-              extrapolate: "clamp"
-            });
-            return (
-              <Animated.View
-                key={pageIndex}
-                style={[styles.normalDot, { width, opacity }]}
-              />
-            );
-          })}
-        </IndicatorContainer>
-        <NavIcon
-          onPress={() => {
-            scroll.current.scrollTo({ x: 0 })
-          }}
-        >
-          <Feather name="users" size={24} color="white" />
-        </NavIcon>
-        <NavIcon
-          onPress={() => {
-            scroll.current.scrollTo({ x: windowWidth })
-          }}
-        >
-          <Feather name="smile" size={24} color="white" />
-        </NavIcon>
-        <NavIcon
-          onPress={() => {
-            scroll.current.scrollTo({ x: windowWidth * 2 })
-          }}
-        >
-          <MaterialIcons name="library-music" size={24} color="white" />
-        </NavIcon>
-        <NavIcon
-          onPress={() => {
-            scroll.current.scrollTo({ x: windowWidth * 3 })
-          }}
-        >
-          <Feather name="search" size={24} color="white" />
-        </NavIcon>
-      </Navigation>
-
-      <Content>
-        <ScrollContainer>
-          <MainScrollView
-            horizontal={true}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={Animated.event([
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    x: scrollX
+        <Content>
+          <ScrollContainer>
+            <MainScrollView
+              horizontal={true}
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={Animated.event([
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      x: scrollX
+                    }
                   }
                 }
-              }
-            ])}
-            scrollEventThrottle={1}
-            ref={scroll}
-          >
-            {pages.map((page, pageIndex) => {
-              if (page.title !== "Search") {
-                return (
-                  <View
-                    style={{ width: windowWidth }}
-                    key={pageIndex}
-                  >
-                    <UserList
-                      type={page.title}
-                      sortedUsers={page.users}
-                      gotoUserPage={
-                        (username, spotifyId) => {
-                          props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
+              ],
+                {
+                  useNativeDriver: false
+                })}
+              scrollEventThrottle={1}
+              ref={scroll}
+            >
+              {pages.map((page, pageIndex) => {
+                if (page.title !== "Search") {
+                  return (
+                    <View
+                      style={{ width: windowWidth }}
+                      key={pageIndex}
+                    >
+                      <UserList
+                        type={page.title}
+                        sortedUsers={page.users}
+                        gotoUserPage={
+                          (username, spotifyId) => {
+                            props.navigation.navigate('User', { username, spotifyId, currentUserProfile: false })
+                          }
                         }
-                      }
-                      metric={page.metric}
-                    />
-                  </View>
-                );
-              } else {
-                return (
-                  <View
-                    style={{ width: windowWidth }}
-                    key={pageIndex}
-                  >
+                        metric={page.metric}
+                      />
+                    </View>
+                  );
+                } else {
+                  return (
+                    <View
+                      style={{ width: windowWidth }}
+                      key={pageIndex}
+                    >
 
-                    <SearchUsers
-                      currentFriends={props.friendList}
-                      sentFriendRequests={props.sentFriendRequests}
-                      addFriend={async (userToAdd) => {
-                        props.addNewFriend(props.userData.username, userToAdd)
-                      }}
-                      currentUser={props.userData}
-                    />
-                  </View>
-                )
-              }
+                      <SearchUsers
+                        currentFriends={props.friendList}
+                        sentFriendRequests={props.sentFriendRequests}
+                        addFriend={async (userToAdd) => {
+                          props.addNewFriend(props.userData.username, userToAdd)
+                        }}
+                        currentUser={props.userData}
+                      />
+                    </View>
+                  )
+                }
 
-            })}
-          </MainScrollView>
-        </ScrollContainer>
-      </Content>
-    </Container>
+              })}
+            </MainScrollView>
+          </ScrollContainer>
+        </Content>
+      </AnimatedContainer>
+    </RootView>
   )
 }
+
+const RootView = styled.View`
+  flex: 1;
+  background: black;
+`
 
 const UserRight = styled.View`
   display: flex;
@@ -360,7 +421,8 @@ const UserStats = styled.View`
 
 const Container = styled.View`
   flex: 1;
-  background: #171e31
+  background: #171e31;
+  border-radius: 10px;
 `;
 
 
@@ -410,6 +472,11 @@ const IndicatorContainer = styled.View`
   position: absolute;
   height: 87%;
 `
+
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
+
+
 
 const styles = StyleSheet.create({
   normalDot: {
