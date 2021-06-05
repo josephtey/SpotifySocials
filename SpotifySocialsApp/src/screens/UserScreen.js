@@ -4,7 +4,7 @@ import { ScrollView, Animated, Easing } from "react-native"
 import { connect } from 'react-redux'
 import { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getAllMatches } from '../actions/profile'
 import { getFriendList } from '../actions/friends'
-import { FontAwesome, AntDesign } from '@expo/vector-icons'
+import { AntDesign } from '@expo/vector-icons'
 import { openMatchHistoryScreen } from '../actions/ui'
 import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
 import MusicCard from '../components/User/MusicCard'
@@ -12,6 +12,9 @@ import ProfileFeature from '../components/User/ProfileFeature'
 import MusicList from '../components/User/MusicList'
 import Loading from '../components/Home/Loading'
 import MatchHistory from '../components/Profile/MatchHistory'
+import { Dimensions } from "react-native";
+
+const screenHeight = Dimensions.get("window").height;
 
 const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getFriendList, getAllMatches, openMatchHistoryScreen }
 
@@ -36,8 +39,9 @@ const UserScreen = (props) => {
   const [userInfoRotate, setUserInfoRotate] = useState(new Animated.Value(0.5))
   const [subheaderScale, setSubheaderScale] = useState(new Animated.Value(0))
   const [audioFeaturesScale, setAudioFeaturesScale] = useState(new Animated.Value(0))
-  const [headerHeight, setHeaderHeight] = useState(new Animated.Value(900))
+  const [headerHeight, setHeaderHeight] = useState(new Animated.Value(screenHeight))
 
+  // Match History Screen
   useEffect(() => {
     if (props.uiAction == "OPEN_MATCH_HISTORY_SCREEN") {
       Animated.parallel([
@@ -73,34 +77,33 @@ const UserScreen = (props) => {
 
   useEffect(() => {
     if (props.userProfile.username) {
-      setTimeout(() => {
+      Animated.parallel([
         Animated.spring(headerHeight, {
           toValue: 350,
           duration: 1500,
           useNativeDriver: false
-        }).start()
+        }).start(),
         Animated.spring(userInfoScale, {
           toValue: 1,
           useNativeDriver: false
-        }).start()
+        }).start(),
 
         Animated.spring(userInfoRotate, {
           toValue: 0,
           useNativeDriver: false
-        }).start()
+        }).start(),
 
 
         Animated.spring(subheaderScale, {
           toValue: 1,
           useNativeDriver: false
-        }).start()
+        }).start(),
 
         Animated.spring(audioFeaturesScale, {
           toValue: 1,
           useNativeDriver: false
         }).start()
-      }, 0)
-
+      ]).start()
     }
   }, [props.userProfile.username])
 
@@ -134,7 +137,6 @@ const UserScreen = (props) => {
           <AnimatedHeader
             style={{ height: headerHeight }}
           >
-
             <BackButtonWrapper
               onPress={() => {
                 props.navigation.goBack();

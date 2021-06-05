@@ -43,6 +43,25 @@ export const getUserMatch = (currentUser, otherUser) => async dispatch => {
   }
 };
 
+export const GET_ALL_USER_MATCHES_REQUEST = 'GET_ALL_USER_MATCHES_REQUEST';
+export const GET_ALL_USER_MATCHES_SUCCESS = 'GET_ALL_USER_MATCHES_SUCCESS';
+export const GET_ALL_USER_MATCHES_ERROR = 'GET_ALL_USER_MATCHES_ERROR';
+
+const getAllUserMatchesRequest = { type: GET_ALL_USER_MATCHES_REQUEST };
+const getAllUserMatchesSuccess = (allUserMatches) => ({ type: GET_ALL_USER_MATCHES_SUCCESS, allUserMatches });
+const getAllUserMatchesError = error => ({ type: GET_ALL_USER_MATCHES_ERROR, error });
+
+export const getAllSpecificUserMatches = (currentUser, otherUser) => async dispatch => {
+  dispatch(getAllUserMatchesRequest);
+  try {
+    const userMatches = await getSpecificUserMatches(currentUser, otherUser)
+    dispatch(getAllUserMatchesSuccess(userMatches))
+
+  } catch (error) {
+    dispatch(getAllUserMatchesError(error));
+  }
+};
+
 export const GET_PROFILE_REQUEST = 'GET_PROFILE_REQUEST';
 export const GET_PROFILE_SUCCESS = 'GET_PROFILE_SUCCESS';
 export const GET_PROFILE_ERROR = 'GET_PROFILE_ERROR';

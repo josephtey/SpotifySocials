@@ -5,6 +5,9 @@ import {
   GET_USER_MATCH_REQUEST,
   GET_USER_MATCH_SUCCESS,
   GET_USER_MATCH_ERROR,
+  GET_ALL_USER_MATCHES_REQUEST,
+  GET_ALL_USER_MATCHES_SUCCESS,
+  GET_ALL_USER_MATCHES_ERROR,
   NEW_MATCH_REQUEST,
   NEW_MATCH_SUCCESS,
   NEW_MATCH_ERROR,
@@ -19,9 +22,11 @@ const initialState = {
   isFetchingUserProfile: false,
   isFetchingSpecificMatch: false,
   isGeneratingNewMatch: false,
+  isFetchingAllUserMatches: false,
   error: null,
-  allMatches: [],
+  allMatches: [], // ALL the matches of ONE user
   userMatch: {},
+  allUserMatches: [], // ALL the matches between a specific combination of TWO users
   userProfile: {}
 }
 
@@ -39,6 +44,12 @@ export default (state = initialState, action) => {
       return { ...state, isFetchingSpecificMatch: false, userMatch: action.userMatch }
     case GET_USER_MATCH_ERROR:
       return { ...state, isFetchingSpecificMatch: false, error: action.error }
+    case GET_ALL_USER_MATCHES_REQUEST:
+      return { ...state, isFetchingAllUserMatches: true }
+    case GET_ALL_USER_MATCHES_SUCCESS:
+      return { ...state, isFetchingAllUserMatches: false, allUserMatches: action.allUserMatches }
+    case GET_ALL_USER_MATCHES_ERROR:
+      return { ...state, isFetchingAllUserMatches: false, error: action.error }
     case NEW_MATCH_REQUEST:
       return { ...state, isGeneratingNewMatch: true }
     case NEW_MATCH_SUCCESS:
