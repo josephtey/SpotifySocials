@@ -10,7 +10,6 @@ import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
 import SearchUsers from '../components/Home/SearchUsers'
 import Notifications from '../components/Home/Notifications'
-import Loading from '../components/Home/Loading'
 
 
 const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend, openMenu }

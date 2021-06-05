@@ -210,6 +210,19 @@ const UserScreen = (props) => {
 
         <WhiteCardPanel>
           <PanelTitle>
+            Obscurity
+          </PanelTitle>
+          <ObscurityPercentage>
+            {props.userData.recentObscurifyPercentile ?
+              props.userData.recentObscurifyPercentile : null}%
+          </ObscurityPercentage>
+          <ObscurityDescription>
+            more obscure music taste than 145,054 other users
+          </ObscurityDescription>
+        </WhiteCardPanel>
+
+        <WhiteCardPanel>
+          <PanelTitle>
             Artists
           </PanelTitle>
           <Artists
@@ -258,6 +271,8 @@ const GenreTitle = styled.Text`
   font-family: TTCommons-Bold;
   color: #26304D;
   font-size: 20px;
+  text-transform: capitalize;
+  margin-bottom: 3px;
 `
 
 const GenreBar = styled.View`
@@ -385,6 +400,19 @@ const UserInfo = styled.View`
   alignItems: center;
 `
 const AudioFeaturesContent = styled.View`
+`
+const ObscurityPercentage = styled.Text`
+  fontSize: 50px;
+  fontFamily: TTCommons-Bold;
+  color: #26304D;
+  marginTop: 7px;
+`
+
+const ObscurityDescription = styled.Text`
+  fontSize: 15px;
+  fontFamily: TTCommons-Medium;
+  color: #26304D;
+  opacity: 0.5;
 `
 
 const AnimatedUserInfo = Animated.createAnimatedComponent(UserInfo)
