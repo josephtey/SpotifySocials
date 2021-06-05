@@ -162,28 +162,30 @@ const HomeScreen = (props) => {
 
 
         </TopBar>
-        <HeaderCards
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-        >
-          <HeaderCard
-            title={Object.keys(props.userData.currentTopGenres).reduce(function (a, b) { return props.userData.currentTopGenres[a] > props.userData.currentTopGenres[b] ? a : b })}
-            caption={"Top Genre"}
-          />
+        <UserStats>
+          <HeaderCards
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+          >
+            <HeaderCard
+              title={Object.keys(props.userData.currentTopGenres).reduce(function (a, b) { return props.userData.currentTopGenres[a] > props.userData.currentTopGenres[b] ? a : b })}
+              caption={"Top Genre"}
+            />
 
 
-          <HeaderCard
-            title={Math.round(props.userData.currentAudioFeatures.valence * 100).toString() + "%"}
-            caption={"Happiness"}
-          />
+            <HeaderCard
+              title={Math.round(props.userData.currentAudioFeatures.valence * 100).toString() + "%"}
+              caption={"Happiness"}
+            />
 
-          <HeaderCard
-            title={props.userData.recentObscurifyPercentile.toString() + "%"}
-            caption={"Obscurity Score"}
-          />
+            <HeaderCard
+              title={props.userData.recentObscurifyPercentile.toString() + "%"}
+              caption={"Obscurity Score"}
+            />
 
 
-        </HeaderCards>
+          </HeaderCards>
+        </UserStats>
       </Header>
 
       <Navigation>
@@ -350,7 +352,10 @@ const Header = styled.View`
 const HeaderCards = styled.ScrollView`
   margin-top: 10px;
   margin-bottom: 40px;
-  padding: 0 20px;
+`
+
+const UserStats = styled.View`
+  marginLeft: 15px;
 `
 
 const Container = styled.View`

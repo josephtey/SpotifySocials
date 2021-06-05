@@ -31,6 +31,9 @@ const UserScreen = (props) => {
   const [userInfoOpacity, setUserInfoOpacity] = useState(new Animated.Value(0))
   const [userInfoMarginTop, setUserInfoMarginTop] = useState(new Animated.Value(-50))
 
+  const [subheaderTop, setSubheaderTop] = useState(new Animated.Value(-20))
+  const [subheaderOpacity, setSubheaderOpacity] = useState(new Animated.Value(0))
+
   useEffect(() => {
     if (props.userProfile.username) {
       Animated.timing(userInfoOpacity, {
@@ -46,8 +49,23 @@ const UserScreen = (props) => {
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: false
       }).start()
+
+      Animated.timing(subheaderTop, {
+        toValue: -65,
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false
+      }).start()
+
+      Animated.timing(subheaderOpacity, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false
+      }).start()
     }
   }, [props.userProfile.username])
+
 
   useEffect(() => {
     props.getUserMatch(props.userData.username, props.navigation.getParam('username'))
@@ -89,7 +107,9 @@ const UserScreen = (props) => {
           </AnimatedUserInfo>
         </Header>
 
-        <SubHeader>
+        <AnimatedSubHeader
+          style={{ marginTop: subheaderTop, opacity: subheaderOpacity }}
+        >
           <ProfileSummary
             fullWidth={props.navigation.getParam('currentUserProfile')}
           >
@@ -126,7 +146,7 @@ const UserScreen = (props) => {
               similar
           </ComparisonSubtitle>
           </Comparison>
-        </SubHeader>
+        </AnimatedSubHeader>
 
         <AudioFeaturesPanel>
           <AudioFeaturesIconBG />
@@ -345,6 +365,7 @@ const UserInfo = styled.View`
 `
 
 const AnimatedUserInfo = Animated.createAnimatedComponent(UserInfo)
+const AnimatedSubHeader = Animated.createAnimatedComponent(SubHeader)
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)
 
