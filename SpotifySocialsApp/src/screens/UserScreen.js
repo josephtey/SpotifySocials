@@ -42,8 +42,17 @@ const UserScreen = (props) => {
     <Container>
       <ScrollView
         showsVerticalScrollIndicator={false}
+        bounces={false}
       >
+
         <Header>
+          <BackButtonWrapper
+            onPress={() => {
+              props.navigation.goBack();
+            }}
+          >
+            <AntDesign name="left" size={24} color="white" />
+          </BackButtonWrapper>
           <UserProfile
             source={{
               uri: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
@@ -158,6 +167,12 @@ const UserScreen = (props) => {
 
 }
 
+const BackButtonWrapper = styled.TouchableOpacity`
+  position: absolute;
+  top: 40;
+  left: 0;
+  padding: 20px;
+`
 const Artists = styled.ScrollView`
   paddingBottom: ${props => props.dataExists ? '30px' : '0'};
   paddingTop: ${props => props.dataExists ? '15px' : '0'};

@@ -9,7 +9,12 @@ import NotificationsScreen from '../screens/NotificationsScreen'
 const navigator = createStackNavigator({
   Login: LoginScreen,
   Initialise: InitialiseScreen,
-  Home: HomeScreen,
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: {
+      gesturesEnabled: false
+    }
+  },
   User: UserScreen,
   Notifications: NotificationsScreen
 },
@@ -17,7 +22,7 @@ const navigator = createStackNavigator({
     initialRouteName: 'Login',
     mode: 'screen',
     defaultNavigationOptions: {
-      headerShown: false
+      headerShown: false,
     }
   }
 );
