@@ -3,15 +3,14 @@ import { Text, Animated } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
 import { getAllFriendRequests, respondToRequest } from '../../actions/friends'
-import { closeNotificationsScreen } from '../../actions/ui'
-import FriendRequestsList from './FriendRequestsList'
+import { closeMatchHistoryScreen } from '../../actions/ui'
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
 
 
 const screenHeight = Dimensions.get("window").height;
-const mapDispatchToProps = { getAllFriendRequests, respondToRequest, closeNotificationsScreen }
+const mapDispatchToProps = { getAllFriendRequests, respondToRequest, closeMatchHistoryScreen }
 
 const mapStateToProps = (state) => {
   return {
@@ -23,20 +22,18 @@ const mapStateToProps = (state) => {
   }
 }
 
-const Notifications = (props) => {
+const MatchHistory = (props) => {
   const [top, setTop] = useState(new Animated.Value(900))
 
   useEffect(() => {
-    if (props.uiAction === "OPEN_NOTIFICATIONS_SCREEN") {
-      props.getAllFriendRequests(props.userData.username)
-
+    if (props.uiAction === "OPEN_MATCH_HISTORY_SCREEN") {
       Animated.spring(top, {
         toValue: 70,
         useNativeDriver: false
       }).start();
     }
 
-    if (props.uiAction === "CLOSE_NOTIFICATIONS_SCREEN") {
+    if (props.uiAction === "CLOSE_MATCH_HISTORY_SCREEN") {
       Animated.spring(top, {
         toValue: screenHeight,
         useNativeDriver: false
@@ -53,12 +50,12 @@ const Notifications = (props) => {
     >
 
       <Cover>
-        <Title>Notifications</Title>
-        <Subtitle>Friend Requests</Subtitle>
+        <Title>Match History</Title>
+        <Subtitle>See how your compatibility has changed over time!</Subtitle>
       </Cover>
       <TouchableOpacity
         onPress={() => {
-          props.closeNotificationsScreen()
+          props.closeMatchHistoryScreen()
         }}
         style={{
           position: "absolute",
@@ -73,33 +70,6 @@ const Notifications = (props) => {
         </CloseView>
       </TouchableOpacity>
       <Content>
-        {
-          props.friendRequests && props.friendRequests.length === 0 ?
-
-            <NoRequestsText>
-              You currently have no friend requests.
-          </NoRequestsText>
-
-            :
-            <FriendRequestsList
-              friendRequests={props.friendRequests.map((friend) => {
-                return {
-                  username: friend.currentUser
-                }
-              })}
-
-              acceptRequest={async (userThatAddedMe) => {
-                props.respondToRequest("accept", props.userData.username, userThatAddedMe)
-              }}
-
-              rejectRequest={async (userThatAddedMe) => {
-                props.respondToRequest("reject", props.userData.username, userThatAddedMe)
-              }}
-
-            />
-
-        }
-
       </Content>
     </AnimatedContainer>
   )
@@ -152,5 +122,5 @@ const NoRequestsText = styled.Text`
   opacity: 0.3;
 `
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-export default connect(mapStateToProps, mapDispatchToProps)(Notifications)
+export default connect(mapStateToProps, mapDispatchToProps)(MatchHistory)
 

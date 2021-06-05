@@ -3,6 +3,7 @@ import { Text } from 'react-native'
 import styled from "styled-components";
 import { connect } from 'react-redux'
 import { generateProfile } from '../actions/auth'
+import Loading from '../components/Home/Loading'
 
 const mapDispatchToProps = { generateProfile }
 
@@ -33,7 +34,9 @@ const InitialiseScreen = (props) => {
 
 
       {loading ?
-        <Text>Loading</Text>
+        <Loading
+          color="#1EB955"
+        />
         :
         <>
           <ProfilePicture

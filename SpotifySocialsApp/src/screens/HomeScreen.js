@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { connect } from 'react-redux'
 import { Feather, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { getFriendList, getRequestedFriends, addNewFriend } from '../actions/friends'
-import { openMenu, closeMenu } from '../actions/notifications'
+import { openNotificationsScreen } from '../actions/ui'
 import { getAllMatches } from '../actions/profile'
 import HeaderCard from '../components/Home/HeaderCard'
 import UserList from '../components/Home/UserList'
@@ -12,7 +12,7 @@ import SearchUsers from '../components/Home/SearchUsers'
 import Notifications from '../components/Home/Notifications'
 
 
-const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend, openMenu }
+const mapDispatchToProps = { getFriendList, getAllMatches, getRequestedFriends, addNewFriend, openNotificationsScreen }
 
 const mapStateToProps = (state) => {
   return {
@@ -20,7 +20,7 @@ const mapStateToProps = (state) => {
     userData: state.auth.userData,
     ...state.friends,
     ...state.profile,
-    ...state.notifications
+    ...state.ui
   }
 }
 
@@ -112,7 +112,7 @@ const HomeScreen = (props) => {
   }, [])
 
   useEffect(() => {
-    if (props.action == "openMenu") {
+    if (props.uiAction == "OPEN_NOTIFICATIONS_SCREEN") {
       Animated.parallel([
         Animated.timing(scale, {
           toValue: 0.9,
@@ -128,7 +128,7 @@ const HomeScreen = (props) => {
       ]).start();
     }
 
-    if (props.action == "closeMenu") {
+    if (props.uiAction == "CLOSE_NOTIFICATIONS_SCREEN") {
       Animated.parallel([
         Animated.timing(scale, {
           toValue: 1,
@@ -142,7 +142,7 @@ const HomeScreen = (props) => {
         })
       ]).start();
     }
-  }, [props.action])
+  }, [props.uiAction])
 
   useEffect(() => {
     if (props.friendList && props.allMatches) {
@@ -196,7 +196,7 @@ const HomeScreen = (props) => {
               <UserRight>
                 <TouchableOpacity
                   onPress={() => {
-                    props.openMenu()
+                    props.openNotificationsScreen()
                   }}
                 >
                   <AntDesign name="bells" size={24} color="white" />

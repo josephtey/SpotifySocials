@@ -1,29 +1,23 @@
 import React from 'react';
 import styled from 'styled-components'
-import Loader from 'react-loader-spinner'
-
+import { ProgressCircle } from 'react-native-material-indicators';
 
 const Loading = ({
   color
 }) => {
   return (
     <Container>
-      <Loader
-        type="TailSpin"
-        color={color}
-        height={100}
-        width={100}
+      <ProgressCircle
+        color={color ? color : "#1EB955"}
       />
     </Container>
   )
 }
 
 const Container = styled.View`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -50px;
-  margin-left: -50px;
+  display: flex;
+  alignItems: center;
+  justifyContent: center;
 `
 
 export default Loading
