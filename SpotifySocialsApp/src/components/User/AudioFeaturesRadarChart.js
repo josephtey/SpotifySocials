@@ -66,10 +66,6 @@ const AudioFeaturesRadarChart = ({
 
       <VictoryChart polar
         domain={{ y: [0, 1] }}
-        animate={{
-          duration: 1000,
-          easing: "exp"
-        }}
       >
         <VictoryGroup colorScale={["#2ac940", "#f6527c"]}
           style={{ data: { fillOpacity: 0.2, strokeWidth: 1.5 } }}

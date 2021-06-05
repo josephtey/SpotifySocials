@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
-import { ScrollView, Text } from "react-native"
+import { ScrollView, Animated, Easing } from "react-native"
 import { connect } from 'react-redux'
 import { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getAllMatches } from '../actions/profile'
 import { getFriendList } from '../actions/friends'
@@ -26,6 +26,28 @@ const mapStateToProps = (state) => {
 }
 
 const UserScreen = (props) => {
+
+  // Animated Elements
+  const [userInfoOpacity, setUserInfoOpacity] = useState(new Animated.Value(0))
+  const [userInfoMarginTop, setUserInfoMarginTop] = useState(new Animated.Value(-50))
+
+  useEffect(() => {
+    if (props.userProfile.username) {
+      Animated.timing(userInfoOpacity, {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false
+      }).start()
+
+      Animated.timing(userInfoMarginTop, {
+        toValue: 0,
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: false
+      }).start()
+    }
+  }, [props.userProfile.username])
 
   useEffect(() => {
     props.getUserMatch(props.userData.username, props.navigation.getParam('username'))
@@ -53,14 +75,18 @@ const UserScreen = (props) => {
           >
             <AntDesign name="left" size={24} color="white" />
           </BackButtonWrapper>
-          <UserProfile
-            source={{
-              uri: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
-            }}
-          />
-          <UserName>
-            {props.userProfile.username}
-          </UserName>
+          <AnimatedUserInfo
+            style={{ opacity: userInfoOpacity, marginTop: userInfoMarginTop }}
+          >
+            <UserProfile
+              source={{
+                uri: "https://twirpz.files.wordpress.com/2015/06/twitter-avi-gender-balanced-figure.png?w=640"
+              }}
+            />
+            <UserName>
+              {props.userProfile.username}
+            </UserName>
+          </AnimatedUserInfo>
         </Header>
 
         <SubHeader>
@@ -311,5 +337,14 @@ const Container = styled.View`
   flex: 1;
   background: white;
 `;
+
+const UserInfo = styled.View`
+  display: flex;
+  justifyContent: center;
+  alignItems: center;
+`
+
+const AnimatedUserInfo = Animated.createAnimatedComponent(UserInfo)
+
 export default connect(mapStateToProps, mapDispatchToProps)(UserScreen)
 
