@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import styled from "styled-components";
-import { ScrollView, Animated, Easing } from "react-native"
+import { ScrollView, Animated, Easing, Pressable } from "react-native"
 import { connect } from 'react-redux'
 import { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getAllMatches } from '../actions/profile'
 import { getFriendList } from '../actions/friends'
 import { AntDesign } from '@expo/vector-icons'
-import { openMatchHistoryScreen } from '../actions/ui'
+import { openMatchHistoryScreen, openGenreScreen, closeGenreScreen, closeMatchHistoryScreen } from '../actions/ui'
 import AudioFeaturesRadarChart from '../components/User/AudioFeaturesRadarChart'
 import MusicCard from '../components/User/MusicCard'
 import ProfileFeature from '../components/User/ProfileFeature'
 import MusicList from '../components/User/MusicList'
-import Loading from '../components/Home/Loading'
 import MatchHistory from '../components/Profile/MatchHistory'
+import GenreScreen from '../components/Profile/GenreScreen'
 import { Dimensions } from "react-native";
 
 const screenHeight = Dimensions.get("window").height;
 
-const mapDispatchToProps = { getUserMatch, generateNewMatch, getProfile, resetUserMatch, getFriendList, getAllMatches, openMatchHistoryScreen }
+const mapDispatchToProps = { closeGenreScreen, closeMatchHistoryScreen, openGenreScreen, getUserMatch, generateNewMatch, getProfile, resetUserMatch, getFriendList, getAllMatches, openMatchHistoryScreen }
 
 const mapStateToProps = (state) => {
   return {
@@ -40,6 +40,9 @@ const UserScreen = (props) => {
   const [subheaderScale, setSubheaderScale] = useState(new Animated.Value(0))
   const [audioFeaturesScale, setAudioFeaturesScale] = useState(new Animated.Value(0))
   const [headerHeight, setHeaderHeight] = useState(new Animated.Value(screenHeight))
+
+  // Popup
+  const [screenDisabled, setScreenDisabled] = useState(false)
 
   // Match History Screen
   useEffect(() => {
@@ -72,6 +75,22 @@ const UserScreen = (props) => {
           useNativeDriver: true
         })
       ]).start();
+    }
+
+    if (props.uiAction == "OPEN_GENRE_SCREEN") {
+      Animated.timing(opacity, {
+        toValue: 0.5,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
+    }
+
+    if (props.uiAction == "CLOSE_GENRE_SCREEN") {
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }).start()
     }
   }, [props.uiAction])
 
@@ -120,8 +139,19 @@ const UserScreen = (props) => {
   }, [])
 
   return (
-    <RootView>
+    <RootView
+      onStartShouldSetResponder={() => {
+        if (props.uiAction === 'OPEN_GENRE_SCREEN') {
+          props.closeGenreScreen()
+        }
+
+        if (props.uiAction === 'OPEN_MATCH_HISTORY_SCREEN') {
+          props.closeMatchHistoryScreen()
+        }
+      }}
+    >
       <MatchHistory />
+      <GenreScreen />
       <AnimatedContainer
         style={{
           transform: [
@@ -247,23 +277,40 @@ const UserScreen = (props) => {
 
           <WhiteCardPanel>
             <PanelTitle>Genres</PanelTitle>
-            <MusicList
-              data={props.userMatch.genreDetails}
-              type="genres"
-              maxNum={3}
-              item={(dataItem, index) => (
-                <Genre
-                  key={index}
-                >
-                  <GenreTitle>{dataItem.genre}</GenreTitle>
-                  <GenreBar>
-                    <GenreBarInner
-                      progress={(dataItem.score / 80) >= 1 ? 1 : (dataItem.score / 80)}
-                    />
-                  </GenreBar>
-                </Genre>
-              )}
-            />
+            <PanelContent>
+              <MusicList
+                data={props.userMatch.genreDetails}
+                type="genres"
+                maxNum={3}
+                item={(dataItem, index) => (
+                  <Genre
+                    key={index}
+                    onPress={() => {
+                      props.openGenreScreen({
+                        genre: dataItem.genre
+                      })
+                    }}
+                  >
+                    <GenreLeft
+                      place={index + 1}
+                    >
+                      <PodiumText>
+                        {index + 1}
+                      </PodiumText>
+                    </GenreLeft>
+
+                    <GenreRight>
+                      <GenreTitle>{dataItem.genre}</GenreTitle>
+                      <GenreBar>
+                        <GenreBarInner
+                          progress={(dataItem.score / 80) >= 1 ? 1 : (dataItem.score / 80)}
+                        />
+                      </GenreBar>
+                    </GenreRight>
+                  </Genre>
+                )}
+              />
+            </PanelContent>
           </WhiteCardPanel>
 
           <WhiteCardPanel>
@@ -309,6 +356,26 @@ const UserScreen = (props) => {
 
 
 }
+
+const PanelContent = styled.View`
+  marginTop: 10px;
+`
+const GenreLeft = styled.View`
+  flex: 0.1;
+  marginRight: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+const PodiumText = styled.Text`
+  color: #bababa;
+  fontFamily: TTCommons-Bold;
+  fontSize: 28px;
+  marginTop: 5px;
+`
+const GenreRight = styled.View`
+  flex: 1;
+`
 const RootView = styled.View`
   flex: 1;
   background: black;
@@ -325,8 +392,11 @@ const Artists = styled.ScrollView`
   paddingLeft: ${props => props.dataExists ? '20px' : '0'};
 `
 
-const Genre = styled.View`
+const Genre = styled.TouchableOpacity`
   margin: 10px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `
 
 const GenreTitle = styled.Text`
