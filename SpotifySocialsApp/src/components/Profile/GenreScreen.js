@@ -23,49 +23,33 @@ const mapStateToProps = (state) => {
 
 const GenreScreen = (props) => {
   const [scale, setScale] = useState(new Animated.Value(0))
-  const [top, setTop] = useState(new Animated.Value(900))
+  const [bottom, setBottom] = useState(new Animated.Value(-500))
   const [opacity, setOpacity] = useState(new Animated.Value(0))
 
   // Screen Transition
   useEffect(() => {
     if (props.uiAction === "OPEN_GENRE_SCREEN") {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 0,
-        ease: Easing.out(),
+      Animated.spring(bottom, {
+        toValue: -20,
         useNativeDriver: false
       }).start();
 
-      Animated.spring(scale, {
-        toValue: 1,
-        useNativeDriver: false
-      }).start()
     }
 
     if (props.uiAction === "CLOSE_GENRE_SCREEN") {
 
 
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 200,
-        ease: Easing.inOut(),
+      Animated.spring(bottom, {
+        toValue: -500,
         useNativeDriver: false
       }).start();
-
-      setTimeout(() => {
-        Animated.spring(scale, {
-          toValue: 0,
-          useNativeDriver: false
-        }).start();
-      }
-        , 500)
     }
 
   }, [props.uiAction])
 
   return (
     <AnimatedContainer
-      style={{ transform: [{ scale }], opacity }}
+      style={{ bottom }}
     >
 
       <Cover>
@@ -77,7 +61,7 @@ const GenreScreen = (props) => {
           <Ionicons name="ios-close" size={30} color="rgba(255, 255, 255, 0.3)" />
         </CloseButtonWrapper>
         <Title>{props.passedData.genre}</Title>
-        <Subtitle>Dummy Text</Subtitle>
+        {/* <Subtitle>{props.passedData.score}</Subtitle> */}
       </Cover>
 
       <Content>
@@ -94,17 +78,18 @@ const CloseButtonWrapper = styled.TouchableOpacity`
   right: 0;
 `
 const Title = styled.Text`
-  font-family: TTCommons-DemiBold;
+  font-family: TTCommons-Bold;
   color: white;
-  font-size: 24px;
+  font-size: 40px;
   font-weight: 600;
+  text-transform: capitalize;
+  marginTop: 7px;
 `
 const Container = styled.View`
   position: absolute;
   align-self: center;
-  top: 250px;
   background: white;
-  width: 87%;
+  width: 100%;
   height: 500px;
   z-index: 100;
   border-radius: 10px;
@@ -112,9 +97,10 @@ const Container = styled.View`
 `;
 
 const Cover = styled.View`
-  height: 200px;
+  height: 100px;
   background: #171e31;
-  align-items: center;
+  align-items: flex-start;
+  padding: 0 30px;
   justify-content: center;
 `;
 const Subtitle = styled.Text`

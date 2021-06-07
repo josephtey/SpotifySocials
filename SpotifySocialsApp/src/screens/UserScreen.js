@@ -140,15 +140,6 @@ const UserScreen = (props) => {
 
   return (
     <RootView
-      onStartShouldSetResponder={() => {
-        if (props.uiAction === 'OPEN_GENRE_SCREEN') {
-          props.closeGenreScreen()
-        }
-
-        if (props.uiAction === 'OPEN_MATCH_HISTORY_SCREEN') {
-          props.closeMatchHistoryScreen()
-        }
-      }}
     >
       <MatchHistory />
       <GenreScreen />
@@ -158,6 +149,15 @@ const UserScreen = (props) => {
             { scale }
           ],
           opacity
+        }}
+        onStartShouldSetResponder={() => {
+          if (props.uiAction === 'OPEN_GENRE_SCREEN') {
+            props.closeGenreScreen()
+          }
+
+          if (props.uiAction === 'OPEN_MATCH_HISTORY_SCREEN') {
+            props.closeMatchHistoryScreen()
+          }
         }}
       >
         <ScrollView
@@ -287,7 +287,8 @@ const UserScreen = (props) => {
                     key={index}
                     onPress={() => {
                       props.openGenreScreen({
-                        genre: dataItem.genre
+                        genre: dataItem.genre,
+                        score: Math.round(((dataItem.score / 80) >= 1 ? 1 : (dataItem.score / 80)) * 100)
                       })
                     }}
                   >
